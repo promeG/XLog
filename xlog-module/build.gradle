@@ -1,8 +1,23 @@
 apply plugin: 'com.android.application'
 
+Properties props = new Properties()
+if(project.hasProperty("MyProject.properties")
+        && new File(project.property("MyProject.properties")).exists()) {
+    props.load(new FileInputStream(file(project.property("MyProject.properties"))))
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
+
+    signingConfigs {
+        release {
+            storeFile file(props['keystore'])
+            storePassword props['keystore.password']
+            keyAlias "promegu"
+            keyPassword props['keystore.password']
+        }
+    }
 
     defaultConfig {
         applicationId "com.promegu.xlog.xposedmodule"
@@ -11,13 +26,16 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

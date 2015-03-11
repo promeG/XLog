@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.promegu.xlogger.base.XLog;
+import com.promegu.xlog.base.XLog;
 
 
 public class MainActivity extends ActionBarActivity {
-   int i = 0;
+
+    @XLog
+    public MainActivity() {
+    }
 
     @Override
     @XLog

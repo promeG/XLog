@@ -7,7 +7,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="haha example which makes the status bar clock red and adds a smiley" />
+            android:value="Annotation-triggered method call logging based on Xposed for android developers." />
         <meta-data
             android:name="xposedminversion"
             android:value="30" />

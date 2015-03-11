@@ -46,11 +46,19 @@ public final class XLogProcessor extends AbstractProcessor {
         List<MethodToLog> methodToLogs = new ArrayList<>();
 
         for (Element element : env.getElementsAnnotatedWith(XLog.class)) {
-            if (!(element instanceof ExecutableElement) || element.getKind() != ElementKind.METHOD) {
+            if (!(element instanceof ExecutableElement) || (element.getKind() != ElementKind.METHOD
+                    && element.getKind() != ElementKind.CONSTRUCTOR)) {
                 throw new IllegalStateException(
-                        String.format("@%s annotation must be on as method.", element.getSimpleName()));
+                        String.format("@%s annotation must be on as method or constructor.", element.getSimpleName()));
             }
             ExecutableElement e = (ExecutableElement) element;
+
+            int type = XLogUtils.TYPE_METHOD;
+            if (e.getKind() == ElementKind.METHOD) {
+                type = XLogUtils.TYPE_METHOD;
+            } else if (e.getKind() == ElementKind.CONSTRUCTOR) {
+                type = XLogUtils.TYPE_CONSTRUCTOR;
+            }
 
             TypeElement te = findEnclosingTypeElement(e);
             System.out.println(te.getQualifiedName().toString() + "." + e.getSimpleName());
@@ -64,7 +72,7 @@ public final class XLogProcessor extends AbstractProcessor {
                 parameterNames.add(ve.getSimpleName().toString());
 
             }
-            MethodToLog methodToLog = new MethodToLog(te.getQualifiedName().toString(), e.getSimpleName().toString(), parameters, parameterNames);
+            MethodToLog methodToLog = new MethodToLog(type, te.getQualifiedName().toString(), e.getSimpleName().toString(), parameters, parameterNames);
             methodToLogs.add(methodToLog);
         }
 

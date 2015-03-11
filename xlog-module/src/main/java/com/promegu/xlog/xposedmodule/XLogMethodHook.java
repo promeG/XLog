@@ -35,7 +35,6 @@ public class XLogMethodHook extends XC_MethodHook {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
         }
-        //XposedBridge.log(builder.toString());
         Log.d(asTag(declaringClass), builder.toString());
         startTime = System.currentTimeMillis();
     }
@@ -54,10 +53,7 @@ public class XLogMethodHook extends XC_MethodHook {
             builder.append(" = ");
             builder.append(Strings.toString(param.getResult()));
         }
-
-        //XposedBridge.log(builder.toString());
         Log.d(asTag(declaringClass), builder.toString());
-
     }
 
     private static String asTag(Class<?> cls) {

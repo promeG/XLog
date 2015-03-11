@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static de.robv.android.xposed.XposedHelpers.findAndHookConstructor;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 
 /**
@@ -28,11 +29,11 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
  */
 public class XLogModule implements IXposedHookLoadPackage {
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        XposedBridge.log("11Loaded app: " + lpparam.packageName);
+        XposedBridge.log("Loaded app: " + lpparam.packageName);
 
         Set<Class> classes = getXLogClasses(XLogUtils.PKG_NAME, lpparam);
 
-        for(Class xlogClass : classes) {
+        for (Class xlogClass : classes) {
 
             String methodsStr = (String) XposedHelpers.findField(xlogClass, XLogUtils.FIELD_NAME).get(null);
 
@@ -50,7 +51,14 @@ public class XLogModule implements IXposedHookLoadPackage {
                 }
                 classCustomTypes[parameterLength] = new XLogMethodHook(methodToLog, declaringClass);
 
-                findAndHookMethod(methodToLog.getPkg(), lpparam.classLoader, methodToLog.getName(), classCustomTypes);
+                switch (methodToLog.getType()) {
+                    case XLogUtils.TYPE_METHOD:
+                        findAndHookMethod(methodToLog.getPkg(), lpparam.classLoader, methodToLog.getName(), classCustomTypes);
+                        break;
+                    case XLogUtils.TYPE_CONSTRUCTOR:
+                        findAndHookConstructor(methodToLog.getPkg(), lpparam.classLoader, classCustomTypes);
+                        break;
+                }
             }
         }
     }
@@ -71,10 +79,10 @@ public class XLogModule implements IXposedHookLoadPackage {
                 return null;
             }
             Set<? extends ClassDef> classDefs = dexFile.getClasses();
-            for(ClassDef cd : classDefs){
+            for (ClassDef cd : classDefs) {
                 String[] pkgClass = getPacakgeClassName(cd.getType());
 
-                if(xLogPkgName.equals(pkgClass[0]) && pkgClass[1] != null && pkgClass[1].startsWith(XLogUtils.CLASS_NAME)){
+                if (xLogPkgName.equals(pkgClass[0]) && pkgClass[1] != null && pkgClass[1].startsWith(XLogUtils.CLASS_NAME)) {
                     XposedBridge.log("ClassDef:" + pkgClass[0] + "  " + pkgClass[1]);
                     Class xlogClass = XposedHelpers.findClass(XLogUtils.PKG_NAME + "." + pkgClass[1], lpparam.classLoader);
                     classes.add(xlogClass);
@@ -87,14 +95,14 @@ public class XLogModule implements IXposedHookLoadPackage {
     }
 
 
-    public static String[] getPacakgeClassName(String classDescriptor){
+    public static String[] getPacakgeClassName(String classDescriptor) {
         String[] packageClassName = new String[2];
-        String trimedClassDescriptor = classDescriptor.substring(1, classDescriptor.length()-1);
+        String trimedClassDescriptor = classDescriptor.substring(1, classDescriptor.length() - 1);
         String[] stringItems = trimedClassDescriptor.split("/");
 
         ArrayList<String> listItems = new ArrayList<String>();
         int i = 0;
-        for(i=0; i < stringItems.length-1; i++){
+        for (i = 0; i < stringItems.length - 1; i++) {
             listItems.add(stringItems[i]);
         }
         String packageName = TextUtils.join(".", listItems);

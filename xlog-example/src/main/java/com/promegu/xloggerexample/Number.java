@@ -1,6 +1,6 @@
 package com.promegu.xloggerexample;
 
-import com.promegu.xlogger.base.XLog;
+import com.promegu.xlog.base.XLog;
 
 /**
  * Created by guyacong on 2015/3/9.
