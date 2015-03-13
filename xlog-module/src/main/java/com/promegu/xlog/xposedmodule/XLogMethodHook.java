@@ -56,6 +56,9 @@ public class XLogMethodHook extends XC_MethodHook {
         Log.d(asTag(declaringClass), builder.toString());
     }
 
+    /**
+     * from https://github.com/JakeWharton/hugo
+     */
     private static String asTag(Class<?> cls) {
         if (cls.isAnonymousClass()) {
             return asTag(cls.getEnclosingClass());
