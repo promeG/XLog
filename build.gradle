@@ -17,3 +17,10 @@ allprojects {
         jcenter()
     }
 }
+
+ext {
+    // see $HOME/.m2/settings.xml
+    repoName = "maven-central"
+    repoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+    releaseVersion = "1.0"
+}

@@ -1,5 +1,38 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'maven-publish-auth'
+buildscript {
+    dependencies {
+        classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
+    }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.github.promeg'
+            artifactId 'xlog'
+            version rootProject.ext.releaseVersion
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name rootProject.ext.repoName
+            url rootProject.ext.repoUrl
+        }
+    }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'commons-codec:commons-codec:1.10'
 }

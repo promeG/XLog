@@ -10,6 +10,12 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
     signingConfigs {
         release {
             storeFile file(props['keystore'])
