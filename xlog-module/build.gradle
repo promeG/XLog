@@ -1,10 +1,12 @@
 apply plugin: 'com.android.application'
 
+
 Properties props = new Properties()
 if(project.hasProperty("MyProject.properties")
         && new File(project.property("MyProject.properties")).exists()) {
     props.load(new FileInputStream(file(project.property("MyProject.properties"))))
 }
+
 
 android {
     compileSdkVersion 21
