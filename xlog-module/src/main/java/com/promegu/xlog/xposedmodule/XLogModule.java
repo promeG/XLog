@@ -80,7 +80,7 @@ public class XLogModule implements IXposedHookLoadPackage {
             }
             Set<? extends ClassDef> classDefs = dexFile.getClasses();
             for (ClassDef cd : classDefs) {
-                String[] pkgClass = getPacakgeClassName(cd.getType());
+                String[] pkgClass = getPackageClassName(cd.getType());
 
                 if (xLogPkgName.equals(pkgClass[0]) && pkgClass[1] != null && pkgClass[1].startsWith(XLogUtils.CLASS_NAME)) {
                     XposedBridge.log("ClassDef:" + pkgClass[0] + "  " + pkgClass[1]);
@@ -95,7 +95,7 @@ public class XLogModule implements IXposedHookLoadPackage {
     }
 
 
-    public static String[] getPacakgeClassName(String classDescriptor) {
+    public static String[] getPackageClassName(String classDescriptor) {
         String[] packageClassName = new String[2];
         String trimedClassDescriptor = classDescriptor.substring(1, classDescriptor.length() - 1);
         String[] stringItems = trimedClassDescriptor.split("/");
