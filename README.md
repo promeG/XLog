@@ -3,7 +3,7 @@ Annotation-triggered method call logging based on Xposed.
 
 ## What's XLog?
 
-Does the same thing like [Hugo](https://github.com/JakeWharton/hugo). Print method calls, arguments, return values, and the excute time by simply add `@XLog` to a method.
+Does the same thing like [Hugo](https://github.com/JakeWharton/hugo). Print method calls, arguments, return values, and the execute time by simply add `@XLog` to a method.
 
 ```java
 @XLog
