@@ -48,4 +48,40 @@ public class MethodToLog {
         return type == XLogUtils.TYPE_CONSTRUCTOR;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder classesSb = new StringBuilder();
+        classesSb.append("[");
+        if(parameterClasses != null) {
+            for (int i = 0; i < parameterClasses.size(); i++) {
+                String className = parameterClasses.get(i);
+                classesSb.append("\"" + className + "\"");
+                if(i < parameterClasses.size() -1){
+                    classesSb.append(",");
+                }
+            }
+        }
+        classesSb.append("]");
+
+        StringBuilder namesSb = new StringBuilder();
+        namesSb.append("[");
+        if(parameterNames != null) {
+            for (int i = 0; i < parameterNames.size(); i++) {
+                String className = parameterNames.get(i);
+                namesSb.append("\"" + className + "\"");
+                if(i < parameterNames.size() -1){
+                    namesSb.append(",");
+                }
+            }
+        }
+        namesSb.append("]");
+
+        return "{" +
+                "\"type\":" + type +
+                ", \"pkg\":" + "\"" + pkg + "\"" +
+                ", \"name\":" + "\"" + name + "\"" +
+                ", \"parameterClasses\":" + classesSb.toString() +
+                ", \"parameterNames\":" + namesSb.toString() +
+                '}';
+    }
 }

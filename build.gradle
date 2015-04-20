@@ -20,5 +20,5 @@ allprojects {
 
 ext {
     groupName = 'com.github.promeg'
-    releaseVersion = "1.0"
+    releaseVersion = "1.1"
 }
