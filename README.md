@@ -24,7 +24,7 @@ Install [Xposed Framework](http://repo.xposed.info/module/de.robv.android.xposed
 
 ### Step 2
 
-Add XLog to your project.
+Add XLog to your project. XLog has no dependencies and small size (<10kB).
 
 ```groovy
 buildscript {
