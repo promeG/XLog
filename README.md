@@ -33,7 +33,7 @@ buildscript {
   }
 
   dependencies {
-    provided 'com.github.promeg:xlog-compiler:1.0'
+    compile 'com.github.promeg:xlog-compiler:1.1'
   }
 }
 ```
