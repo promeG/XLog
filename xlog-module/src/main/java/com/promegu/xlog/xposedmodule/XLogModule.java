@@ -2,6 +2,8 @@ package com.promegu.xlog.xposedmodule;
 
 import android.content.pm.ApplicationInfo;
 import android.text.TextUtils;
+import com.github.promeg.xlog_android.lib.XLogConfig;
+import com.github.promeg.xlog_android.lib.XLogInitializer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.promegu.xlog.base.MethodToLog;
@@ -30,6 +32,9 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 public class XLogModule implements IXposedHookLoadPackage {
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         XposedBridge.log("Loaded app: " + lpparam.packageName);
+        XLogInitializer xLogInitializer = XLogConfigUtils.getXLogConfig(lpparam.packageName, XLogConfig.XLOG_SharedPreferences);
+
+        XposedBridge.log("xLogInitializer: " + xLogInitializer);
 
         Set<Class> classes = getXLogClasses(XLogUtils.PKG_NAME, lpparam);
 

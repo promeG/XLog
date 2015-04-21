@@ -56,4 +56,5 @@ dependencies {
     }
 
     compile project(':xlog-base')
+    compile project(':xlog-android')
 }

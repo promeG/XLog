@@ -1,12 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS
+import static org.apache.tools.ant.taskdefs.condition.Os.isFamily
 
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -20,5 +23,30 @@ allprojects {
 
 ext {
     groupName = 'com.github.promeg'
-    releaseVersion = "1.1"
+    releaseVersion = "1.1.1"
+}
+
+def gradlewPath
+if (isFamily(FAMILY_WINDOWS)) {
+    gradlewPath = project.getProjectDir().getAbsolutePath() + File.separator + 'gradlew.bat'
+} else {
+    gradlewPath = project.getProjectDir().getAbsolutePath() + File.separator + 'gradlew'
+}
+
+task cleanExample(type: Exec) {
+    executable = gradlewPath
+    workingDir = project.file('xlog-example')
+    args = ['clean']
+}
+
+task assembleExample(type: Exec) {
+    executable = gradlewPath
+    workingDir = project.file('xlog-example')
+    args = ['assemble']
+}
+
+task installExample(type: Exec) {
+    executable = gradlewPath
+    workingDir = project.file('xlog-example')
+    args = ['installDebug']
 }
