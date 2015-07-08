@@ -23,7 +23,7 @@ android {
             storeFile file(props['keystore'])
             storePassword props['keystore.password']
             keyAlias "promegu"
-            keyPassword props['keystore.password']
+            keyPassword props['key.password']
         }
     }
 
@@ -55,6 +55,6 @@ dependencies {
         exclude module: 'jsr305'
     }
 
-    compile project(':xlog-base')
+    compile project(':xlog-base')compile project(':xlog-base')
     compile project(':xlog-android')
 }

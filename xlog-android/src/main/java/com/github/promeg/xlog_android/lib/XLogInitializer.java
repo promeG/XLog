@@ -6,6 +6,9 @@ import android.content.Context;
  * Created by guyacong on 2015/4/21.
  */
 public class XLogInitializer {
+
+    private static final String TAG = "XLogInitializer";
+
     private transient final Context context;
     private int mBenchmark;
 

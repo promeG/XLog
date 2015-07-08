@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat
 buildscript {
     repositories {
         jcenter()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.1.2'
@@ -14,6 +15,7 @@ apply plugin: 'com.jfrog.bintray'
 
 repositories {
     jcenter()
+    mavenLocal()
 }
 
 android {
@@ -41,7 +43,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.github.promeg:xlog:1.1.1'
 }
 
 def siteUrl = 'https://github.com/promeG/XLog'
