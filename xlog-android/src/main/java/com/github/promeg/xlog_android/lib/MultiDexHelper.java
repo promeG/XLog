@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.promegu.xlog.base.MethodToLog;
+import com.promegu.xlog.base.XLog;
+import com.promegu.xlog.base.XLogSetting;
 import com.promegu.xlog.base.XLogUtils;
 import com.taobao.android.dexposed.ClassUtils;
 import com.taobao.android.dexposed.XposedHelpers;
@@ -22,8 +24,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +57,7 @@ public class MultiDexHelper {
                         ? Context.MODE_PRIVATE
                         : Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
     }
+
 
     /**
      * get all the dex path
@@ -97,7 +102,7 @@ public class MultiDexHelper {
      * @param context the application context
      * @return all the classes
      */
-    public static List<Class<?>> getAllClasses(Context context)
+    private static List<Class<?>> getAllXLogClasses(Context context, XLogSetting xLogSetting)
             throws PackageManager.NameNotFoundException, IOException {
         List<Class<?>> classNames = new ArrayList<Class<?>>();
         List<String> sourcePaths = getSourcePaths(context);
@@ -112,11 +117,13 @@ public class MultiDexHelper {
                 }
                 Enumeration<String> dexEntries = dexfile.entries();
                 while (dexEntries.hasMoreElements()) {
-                    try {
-                        classNames.add(ClassUtils.getClass(dexEntries.nextElement()));
-                    } catch (ClassNotFoundException e) {
-                        Log.d(TAG, "class not found: " + dexEntries.nextElement());
-
+                    String className = dexEntries.nextElement();
+                    if(XLogUtils.filterResult(className, xLogSetting)) {
+                        try {
+                            classNames.add(ClassUtils.getClass(className));
+                        } catch (Throwable e) {
+                            Log.d(TAG, "class not found: " + className);
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -127,10 +134,15 @@ public class MultiDexHelper {
         return classNames;
     }
 
-    public static List<String> getAllClassNames(Context context)
-            throws PackageManager.NameNotFoundException, IOException {
-        List<String> classNames = new ArrayList<String>();
+    public static XLogSetting getXLogSetting(Context context, String xLogPkgName)
+            throws PackageManager.NameNotFoundException, IOException{
+        long startTime = System.currentTimeMillis();
         List<String> sourcePaths = getSourcePaths(context);
+
+        List<String> xlogClassNames = new ArrayList<String>();
+        Set<String> XLoggerMethodsClassNames = new HashSet<String>();
+        Set<MethodToLog> methodToLogs = new HashSet<MethodToLog>();
+
         for (String path : sourcePaths) {
             try {
                 DexFile dexfile = null;
@@ -141,67 +153,54 @@ public class MultiDexHelper {
                     dexfile = new DexFile(path);
                 }
                 Enumeration<String> dexEntries = dexfile.entries();
+                String xlogClassPrefix = xLogPkgName + "." + XLogUtils.CLASS_NAME;
                 while (dexEntries.hasMoreElements()) {
-                    classNames.add(dexEntries.nextElement());
+                    String className = dexEntries.nextElement();
+                    if(className != null && className
+                            .startsWith(xlogClassPrefix)){
+                        try {
+                            Class xlogClass = ClassUtils.getClass(className);
+
+                            XLoggerMethodsClassNames.add(className);
+
+                            String classesStr = (String) XposedHelpers
+                                    .findField(xlogClass, XLogUtils.FIELD_NAME_CLASSES).get(null);
+                            xlogClassNames.addAll(new Gson().<List<String>>fromJson(classesStr,
+                                    new TypeToken<List<String>>() {
+                                    }.getType()));
+
+
+                            String methodsStr = (String) XposedHelpers
+                                    .findField(xlogClass, XLogUtils.FIELD_NAME_METHODS).get(null);
+                            methodToLogs.addAll(new Gson().<List<MethodToLog>>fromJson(methodsStr,
+                                    new TypeToken<List<MethodToLog>>() {
+                                    }.getType()));
+                        } catch (Throwable t){
+                            //ignore
+                        }
+                    }
                 }
             } catch (IOException e) {
                 throw new IOException("Error at loading dex file '" +
                         path + "'");
             }
         }
-        return classNames;
-    }
 
+        Log.d(TAG, "getXLogSetting() called with " + "context = [" + context + "], xLogPkgName = ["
+                + xLogPkgName + "]  time: " + (System.currentTimeMillis() - startTime));
 
-    public static Set<MethodToLog> getAllMethodToLog(Context context,
-            String xLogPkgName) {
-
-        List<String> allClassNames = null;
-        try {
-            allClassNames = getAllClassNames(context);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if(allClassNames == null){
-            return null;
-        }
-
-        Set<MethodToLog> methodToLogs = new HashSet<MethodToLog>();
-        for (String className : allClassNames) {
-            if (className != null && className
-                    .startsWith(xLogPkgName + "." + XLogUtils.CLASS_NAME)) {
-
-                String methodsStr = null;
-                try {
-                    Class xlogClass = ClassUtils.getClass(className);
-                    methodsStr = (String) XposedHelpers
-                            .findField(xlogClass, XLogUtils.FIELD_NAME).get(null);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "still not found: " + className);
-                }
-
-                methodToLogs.addAll(new Gson().<List<MethodToLog>>fromJson(methodsStr,
-                        new TypeToken<List<MethodToLog>>() {
-                        }.getType()));
-            }
-        }
-        return methodToLogs;
+        return new XLogSetting(methodToLogs, XLoggerMethodsClassNames, XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
     }
 
     public static Set<Member> getAllMethodsWithAnnoation(Context context,
-            Class<? extends Annotation> annoationClass) {
+            Class<? extends Annotation> annoationClass, XLogSetting xLogSetting) {
+        long startTime = System.currentTimeMillis();
         try {
-            List<Class<?>> allClasses = getAllClasses(context);
-            Set<Member> allMethodsWithAnnoation = new HashSet<Member>();
-            for (Class entryClass : allClasses) {
+            List<Class<?>> allXLogClasses = getAllXLogClasses(context, xLogSetting);
+            Set<Member> allMethodsWithAnnoation = new LinkedHashSet<Member>();
+            for (Class entryClass : allXLogClasses) {
                 if (entryClass != null) {
-
+                    // find annotated methods
                     try {
                         Method[] methods = entryClass.getDeclaredMethods();
                         for (Method method : methods) {
@@ -223,9 +222,20 @@ public class MultiDexHelper {
                     } catch (Throwable t) {
                         //ignore
                     }
+
+                    if(entryClass.isAnnotationPresent(XLog.class)) {
+                        // class is annotated with XLog
+                        // add all non-inherited methods
+                        // TODO add modifier filter
+                        allMethodsWithAnnoation.addAll(Arrays.asList(entryClass.getDeclaredMethods()));
+                        allMethodsWithAnnoation.addAll(Arrays.asList(entryClass.getDeclaredConstructors()));
+                    }
                 }
             }
 
+            Log.d(TAG, "getAllMethodsWithAnnoation() called with " + "context = [" + context
+                    + "], annoationClass = [" + annoationClass + "], xLogSetting = [" + xLogSetting
+                    + "]  time: " + (System.currentTimeMillis() - startTime));
             return allMethodsWithAnnoation;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

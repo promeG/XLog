@@ -3,13 +3,16 @@ package com.github.promeg.xlog_android.lib;
 
 import com.promegu.xlog.base.MethodToLog;
 import com.promegu.xlog.base.XLog;
+import com.promegu.xlog.base.XLogSetting;
 import com.promegu.xlog.base.XLogUtils;
 import com.taobao.android.dexposed.DexposedBridge;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -52,23 +55,30 @@ public class XLogConfig {
     }
 
     private static void hookAllMethods(Context context){
-        Set<Member> allMethods = MultiDexHelper.getAllMethodsWithAnnoation(context, XLog.class);
-        Set<MethodToLog> methodToLogs = MultiDexHelper.getAllMethodToLog(context, XLogUtils.PKG_NAME);
-        if(allMethods == null){
-            return;
-        }
-        for(Member member : allMethods){
-            MethodToLog methodToLog = null;
-            if(member instanceof Method || member instanceof Constructor){
-                for(MethodToLog m : methodToLogs){
-                    if(m != null && m.matchMethodOrConstructor(member)){
-                        methodToLog = m;
-                        break;
-                    }
-                }
-                DexposedBridge.hookMethod(member, new XLogMethodHook(member, methodToLog));
-                Log.d(TAG, "hooked: " + member.toString());
+        try {
+            XLogSetting xLogSetting = MultiDexHelper.getXLogSetting(context, XLogUtils.PKG_NAME);
+            Set<Member> methodsToHook = MultiDexHelper.getAllMethodsWithAnnoation(context, XLog.class, xLogSetting);
+            if(methodsToHook == null){
+                return;
             }
+            for(Member member : methodsToHook){
+                MethodToLog methodToLog = null;
+                if(member instanceof Method || member instanceof Constructor){
+                    for(MethodToLog m : xLogSetting.methodToLogs){
+                        if(m != null && m.matchMethodOrConstructor(member)){
+                            methodToLog = m;
+                            break;
+                        }
+                    }
+                    DexposedBridge.hookMethod(member, new XLogMethodHook(member, methodToLog));
+                    Log.d(TAG, "hooked: " + member.toString());
+                }
+            }
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -81,7 +91,8 @@ public class XLogConfig {
             mContext = context.getApplicationContext();
         }
 
-        public ConfigBuilder benchmark(int benchmark) {
+        // TODO add this function
+        private ConfigBuilder benchmark(int benchmark) {
             this.mBenchmark = benchmark;
             return this;
         }

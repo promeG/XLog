@@ -9,6 +9,12 @@ buildscript {
     }
 }
 
+Properties props = new Properties()
+if(project.hasProperty("MyProject.properties")
+        && new File(project.property("MyProject.properties")).exists()) {
+    props.load(new FileInputStream(file(project.property("MyProject.properties"))))
+}
+
 dependencies {
     repositories {
         jcenter()
@@ -18,6 +24,8 @@ dependencies {
 }
 
 apply plugin: 'com.android.application'
+
+version = rootProject.ext.releaseVersion
 
 android {
     compileSdkVersion 21
@@ -30,9 +38,27 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    buildTypes {
+
+    signingConfigs {
         release {
+            storeFile file(props['keystore'])
+            storePassword props['keystore.password']
+            keyAlias "promegu"
+            keyPassword props['key.password']
+        }
+    }
+
+    buildTypes {
+
+        debug {
             minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            multiDexEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -40,8 +66,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    debugCompile 'com.github.promeg:xlog-compiler:1.1.1'
-    debugCompile 'com.github.promeg:xlog-android:1.1.1'
-    releaseCompile 'com.github.promeg:xlog-android-idle:1.1.1'
+    debugCompile 'com.github.promeg:xlog-compiler:' + version
+    debugCompile 'com.github.promeg:xlog-android:' + version
+    releaseCompile 'com.github.promeg:xlog-android-idle:' + version
 }

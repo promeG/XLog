@@ -5,7 +5,7 @@ import android.content.Context;
 /**
  * Created by guyacong on 2015/4/21.
  */
-public class XLogInitializer {
+final class XLogInitializer {
     public XLogInitializer(Context context, int mBenchmark) {
     }
 }

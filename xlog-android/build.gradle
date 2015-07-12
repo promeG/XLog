@@ -41,16 +41,18 @@ android {
     }
 }
 
+group = rootProject.ext.groupName
+version = rootProject.ext.releaseVersion
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.github.promeg:xlog:1.1.1'
+    compile 'com.github.promeg:xlog:' + version
 }
 
 def siteUrl = 'https://github.com/promeG/XLog'
 def gitUrl = 'https://github.com/promeG/XLog.git'
-group = rootProject.ext.groupName
-version = rootProject.ext.releaseVersion
+
 
 install {
     repositories.mavenInstaller {

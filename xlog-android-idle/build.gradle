@@ -108,7 +108,7 @@ bintray {
     publish = true //If version should be auto published after an upload
     pkg {
         repo = 'maven'
-        name = 'xlog-android-idle'
+        name = 'xlog-lib-idle'
         desc = 'Runtime library for XLog.'
         websiteUrl = siteUrl
         issueTrackerUrl = siteUrl + '/issues'

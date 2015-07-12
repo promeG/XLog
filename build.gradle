@@ -23,7 +23,14 @@ allprojects {
 
 ext {
     groupName = 'com.github.promeg'
-    releaseVersion = "1.1.1"
+    releaseVersion = "2.0-beta"
+    compileSdkVersion = 22
+    buildToolsVersion = '22.0.1'
+    targetSdkVersion = 22
+    androidSupportSdkVersion = '22.1.1'
+    robolectricVersion = '3.0-rc3'
+    powermockVersion = '1.6.0'
+    eventbusVersion = '3.0.0-beta1'
 }
 
 def gradlewPath
