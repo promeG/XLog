@@ -1,18 +1,16 @@
 package com.promegu.xloggerexample;
 
 
-import android.app.Application;
-import android.content.Context;
 import com.github.promeg.xlog_android.lib.XLogConfig;
 
+import android.app.Application;
+
 public class SampleApplication extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        final Context context = this;
-        XLogConfig.config(XLogConfig.newConfigBuilder(context)
-                .benchmark(XLogConfig.ANNOTATED)
+        XLogConfig.config(XLogConfig.newConfigBuilder(this)
                 .build());
     }
 }

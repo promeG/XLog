@@ -42,66 +42,97 @@ public final class XLogProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> elements, RoundEnvironment env) {
         System.out.println("processing: " + env.toString());
         List<MethodToLog> methodToLogs = new ArrayList<>();
+        List<String> classNames = new ArrayList<>();
 
         for (Element element : env.getElementsAnnotatedWith(XLog.class)) {
-            if (!(element instanceof ExecutableElement) || (element.getKind() != ElementKind.METHOD
-                    && element.getKind() != ElementKind.CONSTRUCTOR)) {
+            if (element.getKind() != ElementKind.METHOD
+                    && element.getKind() != ElementKind.CONSTRUCTOR
+                    && element.getKind() != ElementKind.CLASS) {
                 throw new IllegalStateException(
-                        String.format("@%s annotation must be on as method or constructor.", element.getSimpleName()));
+                        String.format("@%s annotation must be on as method, constructor or class.",
+                                element.getSimpleName()));
             }
-            ExecutableElement e = (ExecutableElement) element;
+            if(element instanceof TypeElement){
+                // class
+                String pkgName = ((TypeElement) element).getQualifiedName().toString();
+                if(!classNames.contains(pkgName)) {
+                    classNames.add(pkgName);
+                }
+            } else if (element instanceof ExecutableElement) {
+                // method or constructor
+                ExecutableElement e = (ExecutableElement) element;
 
-            int type = XLogUtils.TYPE_METHOD;
-            if (e.getKind() == ElementKind.METHOD) {
-                type = XLogUtils.TYPE_METHOD;
-            } else if (e.getKind() == ElementKind.CONSTRUCTOR) {
-                type = XLogUtils.TYPE_CONSTRUCTOR;
+                int type = XLogUtils.TYPE_METHOD;
+                if (e.getKind() == ElementKind.METHOD) {
+                    type = XLogUtils.TYPE_METHOD;
+                } else if (e.getKind() == ElementKind.CONSTRUCTOR) {
+                    type = XLogUtils.TYPE_CONSTRUCTOR;
+                }
+
+                TypeElement te = findEnclosingTypeElement(e);
+                System.out.println(te.getQualifiedName().toString() + "." + e.getSimpleName());
+                System.out.println(e.getReturnType());
+                List<String> parameters = new ArrayList<>();
+                List<String> parameterNames = new ArrayList<>();
+                for (VariableElement ve : e.getParameters()) {
+                    System.out.println(ve.asType());
+                    System.out.println(ve.getSimpleName());
+                    parameters.add(ve.asType().toString());
+                    parameterNames.add(ve.getSimpleName().toString());
+
+                }
+                MethodToLog methodToLog = new MethodToLog(type, te.getQualifiedName().toString(),
+                        e.getSimpleName().toString(), parameters, parameterNames);
+                methodToLogs.add(methodToLog);
+
+                if(!classNames.contains(methodToLog.getClassName())){
+                    classNames.add(methodToLog.getClassName());
+                }
             }
-
-            TypeElement te = findEnclosingTypeElement(e);
-            System.out.println(te.getQualifiedName().toString() + "." + e.getSimpleName());
-            System.out.println(e.getReturnType());
-            List<String> parameters = new ArrayList<>();
-            List<String> parameterNames = new ArrayList<>();
-            for (VariableElement ve : e.getParameters()) {
-                System.out.println(ve.asType());
-                System.out.println(ve.getSimpleName());
-                parameters.add(ve.asType().toString());
-                parameterNames.add(ve.getSimpleName().toString());
-
-            }
-            MethodToLog methodToLog = new MethodToLog(type, te.getQualifiedName().toString(), e.getSimpleName().toString(), parameters, parameterNames);
-            methodToLogs.add(methodToLog);
         }
 
         if (methodToLogs.size() > 0) {
-            generateXLogProcessor("_" + MD5(env.toString()), methodToLogs);
+            generateXLogProcessor("_" + MD5(env.toString()), methodToLogs, classNames);
         }
 
         return true;
     }
 
-    private void generateXLogProcessor(String classSuffix, List<MethodToLog> methodToLogs) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+    private void generateXLogProcessor(String classSuffix, List<MethodToLog> methodToLogs, List<String> classNames) {
+        StringBuilder methodsSb = new StringBuilder();
+        methodsSb.append("[");
         if (methodToLogs != null) {
             for (int i = 0; i < methodToLogs.size(); i++) {
-                sb.append(methodToLogs.get(i).toString());
+                methodsSb.append(methodToLogs.get(i).toString());
                 if (i < methodToLogs.size() - 1) {
-                    sb.append(",");
+                    methodsSb.append(",");
                 }
             }
         }
-        sb.append("]");
+        methodsSb.append("]");
 
-        String methodToLogStr = sb.toString();
+        String methodToLogStr = methodsSb.toString();
+
+        StringBuilder classSb = new StringBuilder();
+        classSb.append("[");
+        if (methodToLogs != null) {
+            for (int i = 0; i < classNames.size(); i++) {
+                classSb.append(classNames.get(i).toString());
+                if (i < classNames.size() - 1) {
+                    classSb.append(",");
+                }
+            }
+        }
+        classSb.append("]");
+
+        String classNamesStr = classSb.toString();
 
         System.out.println(methodToLogStr);
 
         try {
             JavaFileObject jfo = filer.createSourceFile(XLogUtils.PKG_NAME + "." + XLogUtils.CLASS_NAME + classSuffix);
             Writer writer = jfo.openWriter();
-            writer.write(brewJava(methodToLogStr, classSuffix));
+            writer.write(brewJava(methodToLogStr, classNamesStr, classSuffix));
             writer.flush();
             writer.close();
         } catch (IOException e) {
@@ -122,7 +153,7 @@ public final class XLogProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
-    String brewJava(String methodStr, String classSuffix) {
+    String brewJava(String methodStr, String classNamesStr, String classSuffix) {
         StringBuilder builder = new StringBuilder();
         builder.append("// Generated code from XLog. Do not modify!\n");
         builder.append("package ").append(XLogUtils.PKG_NAME).append(";\n\n");
@@ -134,10 +165,16 @@ public final class XLogProcessor extends AbstractProcessor {
 
         builder.append(" {\n");
 
-        builder.append("public static String ")
-                .append(XLogUtils.FIELD_NAME)
+        builder.append("\tpublic static String ")
+                .append(XLogUtils.FIELD_NAME_METHODS)
                 .append(" = ")
                 .append(stringLiteral(methodStr))
+                .append(";\n");
+
+        builder.append("\tpublic static String ")
+                .append(XLogUtils.FIELD_NAME_CLASSES)
+                .append(" = ")
+                .append(stringLiteral(classNamesStr))
                 .append(";\n");
 
         builder.append("}\n");

@@ -85,4 +85,9 @@ bintray {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    testCompile 'com.google.code.gson:gson:2.3.1'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile 'org.skyscreamer:jsonassert:1.2.3'
 }

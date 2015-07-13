@@ -1,7 +1,7 @@
 package com.promegu.xloggerexample;
 
+import android.app.Activity;
 import android.os.SystemClock;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,8 +9,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import com.promegu.xlog.base.XLog;
 
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     @XLog
     public MainActivity() {
@@ -23,6 +22,9 @@ public class MainActivity extends ActionBarActivity {
         TextView tv = new TextView(this);
         tv.setText("Check logcat!");
         setContentView(tv);
+
+        SampleCalculator sampleCalculator = new SampleCalculator();
+        sampleCalculator.calculate(1, 2);
 
         printArgs("The", "Quick", "Brown", "Fox");
 
@@ -89,7 +91,7 @@ public class MainActivity extends ActionBarActivity {
                 sleepyMethod(SOME_POINTLESS_AMOUNT_OF_TIME);
             }
 
-            // not support anonymous class yet
+            // also support anonymous class
             @XLog
             private void sleepyMethod(long milliseconds) {
                 SystemClock.sleep(milliseconds);

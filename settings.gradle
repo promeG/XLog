@@ -1,1 +1,1 @@
-include ':xlog-base', ':xlog-module', ':xlog-runtime', ':xlog-android'
+include ':xlog-base', ':xlog-runtime', ':xlog-android', ':xlog-android-idle', 'xlog-example'
