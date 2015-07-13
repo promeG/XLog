@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
         setContentView(tv);
 
         SampleCalculator sampleCalculator = new SampleCalculator();
-        sampleCalculator.calculator(1, 2);
+        sampleCalculator.calculate(1, 2);
 
         printArgs("The", "Quick", "Brown", "Fox");
 

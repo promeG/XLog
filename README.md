@@ -30,7 +30,7 @@ This includes public, protected, default (package) access, and private methods o
 @XLog
 public class BaseCalculator {
 
-    public int calculator(int i, int j){
+    public int calculate(int i, int j){
         return i+j;
     }
 }
@@ -41,7 +41,7 @@ public class SampleCalculator extends BaseCalculator {
 }
 
 
-new SampleCalculator().calculator(1, 2);
+new SampleCalculator().calculate(1, 2);
 
 ```
 ```
@@ -49,8 +49,8 @@ D/SampleCalculator: ⇢ com.promegu.xloggerexample.SampleCalculator()
 D/BaseCalculator: ⇢ com.promegu.xloggerexample.BaseCalculator()
 D/BaseCalculator: ⇠ com.promegu.xloggerexample.BaseCalculator [0ms]
 D/SampleCalculator: ⇠ com.promegu.xloggerexample.SampleCalculator [0ms]
-D/BaseCalculator: ⇢ calculator(int=1, int=2)
-D/BaseCalculator: ⇠ calculator [0ms] = 3
+D/BaseCalculator: ⇢ calculate(int=1, int=2)
+D/BaseCalculator: ⇠ calculate [0ms] = 3
 ```
 
 ## How to use XLog
@@ -66,10 +66,10 @@ buildscript {
   }
 
   dependencies {
-    debugCompile 'com.github.promeg:xlog-compiler:2.0'
-    debugCompile 'com.github.promeg:xlog-android:2.0'
+    debugCompile 'com.github.promeg:xlog-compiler:2.0' // ~6kB
+    debugCompile 'com.github.promeg:xlog-android:2.0' // ~150kB
 
-    releaseCompile 'com.github.promeg:xlog-android-idle:2.0'
+    releaseCompile 'com.github.promeg:xlog-android-idle:2.0' // ~5kB
   }
 }
 ```

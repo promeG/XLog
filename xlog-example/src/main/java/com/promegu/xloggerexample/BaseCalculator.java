@@ -13,7 +13,7 @@ public class BaseCalculator {
         return "BaseCalculator";
     }
 
-    public int calculator(int i, int j){
+    public int calculate(int i, int j){
         return i+j;
     }
 }
