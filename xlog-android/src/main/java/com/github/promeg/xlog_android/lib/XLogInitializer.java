@@ -14,13 +14,18 @@ final class XLogInitializer {
     private static final String TAG = "XLogInitializer";
 
     private transient final Context context;
+
     private int mBenchmark;
+
+    private long mTimeThreshold;
+
     private List<XLogMethod> mXLogMethods;
 
-    public XLogInitializer(Context context, int benchmark,
+    public XLogInitializer(Context context, int benchmark, long timeThreshold,
             List<XLogMethod> XLogMethods) {
         this.context = context;
         mBenchmark = benchmark;
+        mTimeThreshold = timeThreshold;
         mXLogMethods = XLogMethods;
     }
 
@@ -36,8 +41,12 @@ final class XLogInitializer {
         return mBenchmark;
     }
 
+    public long getTimeThreshold() {
+        return mTimeThreshold;
+    }
+
     @Override
-    public String toString(){
+    public String toString() {
         return "{" +
                 "\"mBenchmark\":" + mBenchmark +
                 '}';

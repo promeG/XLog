@@ -133,9 +133,16 @@ public class MultiDexHelper {
             }
         }
 
-        List<String> classNamesFromSetting = xLogSetting.xlogClassNames;
-        for(Class clazz : classes){
-            if(clazz != null && clazz.getCanonicalName() != null )
+        Set<String> classNamesFromSetting = new HashSet<String>(xLogSetting.xlogClassNames);
+        Set<String> remainClassNames = XLogUtils.getRemainingClassNames(new HashSet<Class<?>>(classes), classNamesFromSetting);
+        if(remainClassNames != null) {
+            for (String className : remainClassNames){
+                try {
+                    classes.add(ClassUtils.getClass(className));
+                } catch (Throwable e) {
+                    Log.d(TAG, "class not found when process remain classes: " + className);
+                }
+            }
         }
 
         return classes;

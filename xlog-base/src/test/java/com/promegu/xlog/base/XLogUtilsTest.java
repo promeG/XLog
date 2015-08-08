@@ -98,6 +98,7 @@ public class XLogUtilsTest {
     @Test
     public void testGetPkgPrefixesForCoarseMatch4() {
         // null or empty XLogMethods --> empty list
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(null, 1).size(), is(0));
         assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(new ArrayList<XLogMethod>(), 1).size(), is(0));
     }
 
@@ -141,10 +142,16 @@ public class XLogUtilsTest {
         classes.add(MethodToLog.class);
         classes.add(Object.class);
 
-        Set<String> 
+        Set<String> expected = new HashSet<>();
+        expected.add("com.promegu.other.class1");
+        expected.add("com.promegu.other.class2");
+        expected.add("java.lang.test.Object");
+        expected.add("retrofit");
+        expected.add("retrofit.utils");
 
-        assertThat(XLogUtils.getRemainingClassNames(null, getMember(XLogMethod.class, "get")),
-                is(false));
+        assertThat(
+                XLogUtils.getRemainingClassNames(classes, new HashSet<String>(classNames)),
+                is(expected));
 
     }
 

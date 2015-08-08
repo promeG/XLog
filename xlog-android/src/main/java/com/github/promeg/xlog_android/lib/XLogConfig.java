@@ -46,6 +46,11 @@ public class XLogConfig {
 
     public static final int ALL = 3;
 
+    public static final long TimeThreshold_NONE = -1L;
+
+    /** TimeThreshold_BEFORE_HOOK must lessthan TimeThreshold_NONE **/
+    public static final long TimeThreshold_BEFORE_HOOK = -2L;
+
     private XLogConfig() {
     }
 
@@ -58,22 +63,25 @@ public class XLogConfig {
                 .getSharedPreferences(XLOG_SharedPreferences, Context.MODE_PRIVATE);
         sharedPreferences.edit().putString(PREF_CONFIG, initializer.toString()).commit();
         if (DexposedBridge.canDexposed(initializer.getContext())) {
-            hookAllMethods(initializer.getContext(), initializer.getXLogMethods());
+            hookAllMethods(initializer.getContext(), initializer.getTimeThreshold(),
+                    initializer.getXLogMethods());
         }
     }
 
-    private static void hookAllMethods(Context context, List<XLogMethod> xLogMethods) {
+    private static void hookAllMethods(Context context, long timeThreshold,
+            List<XLogMethod> xLogMethods) {
         try {
             XLogSetting xLogSetting = MultiDexHelper.getXLogSetting(context, XLogUtils.PKG_NAME);
             if (xLogSetting != null && xLogMethods != null) {
                 List<String> classNames = new ArrayList<String>();
-                for(XLogMethod xLogMethod : xLogMethods){
-                    if(xLogMethod != null && !classNames.contains(xLogMethod.getClassName())){
+                for (XLogMethod xLogMethod : xLogMethods) {
+                    if (xLogMethod != null && !classNames.contains(xLogMethod.getClassName())) {
                         classNames.add(xLogMethod.getClassName());
                     }
                 }
                 xLogSetting.appendPrefixes(
-                        XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xLogMethods, 2), classNames);
+                        XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xLogMethods, 2),
+                        classNames);
             }
             Set<Member> methodsToHook = MultiDexHelper
                     .getAllMethodsWithAnnoation(context, XLog.class, xLogSetting, xLogMethods);
@@ -89,7 +97,8 @@ public class XLogConfig {
                             break;
                         }
                     }
-                    DexposedBridge.hookMethod(member, new XLogMethodHook(member, methodToLog));
+                    DexposedBridge.hookMethod(member,
+                            new XLogMethodHook(member, methodToLog, timeThreshold));
                     Log.d(TAG, "hooked: " + member.toString());
                 }
             }
@@ -108,7 +117,9 @@ public class XLogConfig {
 
         int mBenchmark = NONE;
 
-        List<XLogMethod> mXLogMethods;
+        long mTimeThreshold = TimeThreshold_NONE;
+
+        List<XLogMethod> mXLogMethods = null;
 
         private ConfigBuilder(Context context) {
             mContext = context.getApplicationContext();
@@ -120,13 +131,18 @@ public class XLogConfig {
             return this;
         }
 
+        public ConfigBuilder timeThreshold(long timeInMillis) {
+            mTimeThreshold = timeInMillis;
+            return this;
+        }
+
         public ConfigBuilder logMethods(List<XLogMethod> xLogMethods) {
             this.mXLogMethods = xLogMethods;
             return this;
         }
 
         public XLogInitializer build() {
-            return new XLogInitializer(mContext, mBenchmark, mXLogMethods);
+            return new XLogInitializer(mContext, mBenchmark, mTimeThreshold, mXLogMethods);
         }
     }
 }

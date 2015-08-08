@@ -53,6 +53,41 @@ D/BaseCalculator: ⇢ calculate(int=1, int=2)
 D/BaseCalculator: ⇠ calculate [0ms] = 3
 ```
 
+### 3. XLog more
+#####XLog a method that you cannot access to the source code
+
+```java
+    List<XLogMethod> xLogMethods;
+    xLogMethods.add(new XLogMethod(TextView.class, "setText"));
+
+    XLogConfig.config(XLogConfig.newConfigBuilder(this)
+                    .logMethods(xLogMethods)
+                    .build());
+
+
+    textView.setText("Hello, promeG!");
+```
+
+```
+D/TextView﹕ ⇢ setText(CharSequence="Hello, promeG!")
+D/TextView﹕ ⇢ setText(CharSequence="Hello, promeG!", BufferType=NORMAL)
+D/TextView﹕ ⇢ setText(CharSequence="Hello, promeG!", BufferType=NORMAL, boolean=true, int=0)
+D/TextView﹕ ⇠ setText [0ms]
+D/TextView﹕ ⇠ setText [0ms]
+D/TextView﹕ ⇠ setText [0ms]
+```
+
+####Ignore a method's log if it's running time less than a time threshold
+
+```java
+    XLogConfig.config(XLogConfig.newConfigBuilder(this)
+                    .timeThreshold(10)
+                    .build());
+```
+
+
+
+
 ## How to use XLog
 
 Add XLog to your project.
@@ -66,10 +101,10 @@ buildscript {
   }
 
   dependencies {
-    debugCompile 'com.github.promeg:xlog-compiler:2.0' // ~6kB
-    debugCompile 'com.github.promeg:xlog-android:2.0' // ~150kB
+    debugCompile 'com.github.promeg:xlog-compiler:2.1.0' // ~6kB
+    debugCompile 'com.github.promeg:xlog-android:2.1.0' // ~150kB
 
-    releaseCompile 'com.github.promeg:xlog-android-idle:2.0' // ~5kB
+    releaseCompile 'com.github.promeg:xlog-android-idle:2.1.0' // ~5kB
   }
 }
 ```
