@@ -20,4 +20,29 @@ public class XLogSetting {
         this.xlogClassPrefixes = xlogClassPrefixes;
         this.xlogClassNames = xlogClassNames;
     }
+
+    public void appendPrefixes(List<String> classPrefixes, List<String> classNames){
+        if(classPrefixes == null || classNames == null){
+            return;
+        }
+        if(xlogClassPrefixes == null){
+            xlogClassPrefixes = classPrefixes;
+        } else {
+            for (String classP : classPrefixes) {
+                if (!xlogClassPrefixes.contains(classP)) {
+                    xlogClassPrefixes.add(classP);
+                }
+            }
+        }
+
+        if(xlogClassNames == null){
+            xlogClassNames = classNames;
+        } else {
+            for (String classN : classNames) {
+                if (!xlogClassNames.contains(classN)) {
+                    xlogClassNames.add(classN);
+                }
+            }
+        }
+    }
 }

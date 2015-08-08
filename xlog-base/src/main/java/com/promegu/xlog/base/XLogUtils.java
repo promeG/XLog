@@ -1,5 +1,6 @@
 package com.promegu.xlog.base;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,42 @@ public class XLogUtils {
     public static final String CLASS_NAME = "XLoggerMethods";
     public static final String FIELD_NAME_METHODS = "METHODS_TO_LOG";
     public static final String FIELD_NAME_CLASSES = "CLASSES_TO_LOG";
+
+    public static Set<String> getRemainingClassNames(Set<Class<?>> classes, Set<String> classNames){
+        if(classes == null || classes.size() == 0 || classNames == null){
+            return classNames;
+        }
+        Set<String> nameFromClasses = new HashSet<>();
+        for(Class clazz : classes){
+            if(clazz != null) {
+                nameFromClasses.add(clazz.getCanonicalName().replaceAll("\\$", "."));
+            }
+        }
+
+        nameFromClasses.retainAll(classNames);
+        classNames.removeAll(nameFromClasses);
+
+        return classNames;
+    }
+
+    public static boolean shouldLogMember(List<XLogMethod> xLogMethods, Member member){
+        if(xLogMethods == null || member == null){
+            return false;
+        }
+        for(XLogMethod xLogMethod : xLogMethods){
+            if(xLogMethod != null && xLogMethod.getClassName() != null
+                && xLogMethod.getClassName().equals(member.getDeclaringClass().getCanonicalName()) ){
+                // find XLogMethod
+                if(xLogMethod.getMethodName() == null || xLogMethod.getMethodName().equals("")){
+                    return true;
+                }
+                if(xLogMethod.getMethodName().equals(member.getName())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public static boolean filterResult(String className, XLogSetting xLogSetting){
         if(className == null || className.length() == 0){
@@ -77,6 +114,19 @@ public class XLogUtils {
         }
 
         return result;
+    }
+
+    public static List<String> getPkgPrefixesForCoarseMatchXLogMethods(List<XLogMethod> xLogMethods, int pkgSectionSize){
+        if(xLogMethods == null || xLogMethods.size() == 0){
+            return new ArrayList<>();
+        }
+        List<String> classNames = new ArrayList<>();
+        for(XLogMethod xLogMethod : xLogMethods){
+            if(xLogMethod != null && xLogMethod.getClassName() != null && xLogMethod.getClassName().length() > 0){
+                classNames.add(xLogMethod.getClassName().replaceAll("\\$", "."));
+            }
+        }
+        return getPkgPrefixesForCoarseMatch(classNames, pkgSectionSize);
     }
 
     static int getClassNameSectionSize(String className){

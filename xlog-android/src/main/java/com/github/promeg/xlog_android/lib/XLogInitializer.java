@@ -1,6 +1,10 @@
 package com.github.promeg.xlog_android.lib;
 
+import com.promegu.xlog.base.XLogMethod;
+
 import android.content.Context;
+
+import java.util.List;
 
 /**
  * Created by guyacong on 2015/4/21.
@@ -11,10 +15,17 @@ final class XLogInitializer {
 
     private transient final Context context;
     private int mBenchmark;
+    private List<XLogMethod> mXLogMethods;
 
-    public XLogInitializer(Context context, int mBenchmark) {
+    public XLogInitializer(Context context, int benchmark,
+            List<XLogMethod> XLogMethods) {
         this.context = context;
-        this.mBenchmark = mBenchmark;
+        mBenchmark = benchmark;
+        mXLogMethods = XLogMethods;
+    }
+
+    public List<XLogMethod> getXLogMethods() {
+        return mXLogMethods;
     }
 
     public Context getContext() {

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 
 import com.promegu.xlog.base.MethodToLog;
 import com.promegu.xlog.base.XLog;
+import com.promegu.xlog.base.XLogMethod;
 import com.promegu.xlog.base.XLogSetting;
 import com.promegu.xlog.base.XLogUtils;
 import com.taobao.android.dexposed.ClassUtils;
@@ -104,7 +105,7 @@ public class MultiDexHelper {
      */
     private static List<Class<?>> getAllXLogClasses(Context context, XLogSetting xLogSetting)
             throws PackageManager.NameNotFoundException, IOException {
-        List<Class<?>> classNames = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<Class<?>>();
         List<String> sourcePaths = getSourcePaths(context);
         for (String path : sourcePaths) {
             try {
@@ -118,9 +119,9 @@ public class MultiDexHelper {
                 Enumeration<String> dexEntries = dexfile.entries();
                 while (dexEntries.hasMoreElements()) {
                     String className = dexEntries.nextElement();
-                    if(XLogUtils.filterResult(className, xLogSetting)) {
+                    if (XLogUtils.filterResult(className, xLogSetting)) {
                         try {
-                            classNames.add(ClassUtils.getClass(className));
+                            classes.add(ClassUtils.getClass(className));
                         } catch (Throwable e) {
                             Log.d(TAG, "class not found: " + className);
                         }
@@ -131,11 +132,17 @@ public class MultiDexHelper {
                         path + "'");
             }
         }
-        return classNames;
+
+        List<String> classNamesFromSetting = xLogSetting.xlogClassNames;
+        for(Class clazz : classes){
+            if(clazz != null && clazz.getCanonicalName() != null )
+        }
+
+        return classes;
     }
 
     public static XLogSetting getXLogSetting(Context context, String xLogPkgName)
-            throws PackageManager.NameNotFoundException, IOException{
+            throws PackageManager.NameNotFoundException, IOException {
         long startTime = System.currentTimeMillis();
         List<String> sourcePaths = getSourcePaths(context);
 
@@ -156,8 +163,8 @@ public class MultiDexHelper {
                 String xlogClassPrefix = xLogPkgName + "." + XLogUtils.CLASS_NAME;
                 while (dexEntries.hasMoreElements()) {
                     String className = dexEntries.nextElement();
-                    if(className != null && className
-                            .startsWith(xlogClassPrefix)){
+                    if (className != null && className
+                            .startsWith(xlogClassPrefix)) {
                         try {
                             Class xlogClass = ClassUtils.getClass(className);
 
@@ -169,13 +176,12 @@ public class MultiDexHelper {
                                     new TypeToken<List<String>>() {
                                     }.getType()));
 
-
                             String methodsStr = (String) XposedHelpers
                                     .findField(xlogClass, XLogUtils.FIELD_NAME_METHODS).get(null);
                             methodToLogs.addAll(new Gson().<List<MethodToLog>>fromJson(methodsStr,
                                     new TypeToken<List<MethodToLog>>() {
                                     }.getType()));
-                        } catch (Throwable t){
+                        } catch (Throwable t) {
                             //ignore
                         }
                     }
@@ -189,11 +195,13 @@ public class MultiDexHelper {
         Log.d(TAG, "getXLogSetting() called with " + "context = [" + context + "], xLogPkgName = ["
                 + xLogPkgName + "]  time: " + (System.currentTimeMillis() - startTime));
 
-        return new XLogSetting(methodToLogs, XLoggerMethodsClassNames, XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
+        return new XLogSetting(methodToLogs, XLoggerMethodsClassNames,
+                XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
     }
 
     public static Set<Member> getAllMethodsWithAnnoation(Context context,
-            Class<? extends Annotation> annoationClass, XLogSetting xLogSetting) {
+            Class<? extends Annotation> annoationClass, XLogSetting xLogSetting,
+            List<XLogMethod> xLogMethods) {
         long startTime = System.currentTimeMillis();
         try {
             List<Class<?>> allXLogClasses = getAllXLogClasses(context, xLogSetting);
@@ -204,7 +212,8 @@ public class MultiDexHelper {
                     try {
                         Method[] methods = entryClass.getDeclaredMethods();
                         for (Method method : methods) {
-                            if (method.isAnnotationPresent(annoationClass)) {
+                            if (method.isAnnotationPresent(annoationClass) || XLogUtils
+                                    .shouldLogMember(xLogMethods, method)) {
                                 allMethodsWithAnnoation.add(method);
                             }
                         }
@@ -215,7 +224,8 @@ public class MultiDexHelper {
                     try {
                         Constructor[] constructors = entryClass.getDeclaredConstructors();
                         for (Constructor constructor : constructors) {
-                            if (constructor.isAnnotationPresent(annoationClass)) {
+                            if (constructor.isAnnotationPresent(annoationClass) || XLogUtils
+                                    .shouldLogMember(xLogMethods, constructor)) {
                                 allMethodsWithAnnoation.add(constructor);
                             }
                         }
@@ -223,12 +233,14 @@ public class MultiDexHelper {
                         //ignore
                     }
 
-                    if(entryClass.isAnnotationPresent(XLog.class)) {
+                    if (entryClass.isAnnotationPresent(XLog.class)) {
                         // class is annotated with XLog
                         // add all non-inherited methods
                         // TODO add modifier filter
-                        allMethodsWithAnnoation.addAll(Arrays.asList(entryClass.getDeclaredMethods()));
-                        allMethodsWithAnnoation.addAll(Arrays.asList(entryClass.getDeclaredConstructors()));
+                        allMethodsWithAnnoation
+                                .addAll(Arrays.asList(entryClass.getDeclaredMethods()));
+                        allMethodsWithAnnoation
+                                .addAll(Arrays.asList(entryClass.getDeclaredConstructors()));
                     }
                 }
             }
