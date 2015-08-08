@@ -57,15 +57,15 @@ D/BaseCalculator: ⇠ calculate [0ms] = 3
 #####XLog a method that you cannot access to the source code
 
 ```java
-    List<XLogMethod> xLogMethods;
-    xLogMethods.add(new XLogMethod(TextView.class, "setText"));
+List<XLogMethod> xLogMethods;
+xLogMethods.add(new XLogMethod(TextView.class, "setText"));
 
-    XLogConfig.config(XLogConfig.newConfigBuilder(this)
-                    .logMethods(xLogMethods)
-                    .build());
+XLogConfig.config(XLogConfig.newConfigBuilder(this)
+                .logMethods(xLogMethods)
+                .build());
 
 
-    textView.setText("Hello, promeG!");
+textView.setText("Hello, promeG!");
 ```
 
 ```
@@ -77,12 +77,12 @@ D/TextView﹕ ⇠ setText [0ms]
 D/TextView﹕ ⇠ setText [0ms]
 ```
 
-####Ignore a method's log if it's running time less than a time threshold
+#####Ignore a method's log if its running time less than a time threshold
 
 ```java
-    XLogConfig.config(XLogConfig.newConfigBuilder(this)
-                    .timeThreshold(10)
-                    .build());
+XLogConfig.config(XLogConfig.newConfigBuilder(this)
+                .timeThreshold(10)
+                .build());
 ```
 
 
