@@ -23,7 +23,7 @@ allprojects {
 
 ext {
     groupName = 'com.github.promeg'
-    releaseVersion = "2.1.0"
+    releaseVersion = "2.1.1"
     compileSdkVersion = 22
     buildToolsVersion = '22.0.1'
     targetSdkVersion = 22
