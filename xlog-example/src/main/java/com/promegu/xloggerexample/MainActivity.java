@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import com.promegu.xlog.base.XLog;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class MainActivity extends Activity {
 
     @XLog
@@ -37,6 +40,20 @@ public class MainActivity extends Activity {
         Log.d("Charming", charmer.askHowAreYou());
 
         startSleepyThread();
+
+        Collection<Integer> largeCollection = new HashSet<>();
+        for(int i = 1000; i < 2000; i++){
+            largeCollection.add(i);
+        }
+
+        xlogLargeCollection(largeCollection);
+
+        int[] ints = new int[1000];
+        for(int i = 0; i < ints.length; i++){
+            ints[i] = i;
+        }
+
+        xlogLargeArray(ints);
     }
 
 
@@ -69,6 +86,16 @@ public class MainActivity extends Activity {
         for (String arg : args) {
             Log.i("Args", arg);
         }
+    }
+
+    @XLog
+    private void xlogLargeCollection(Collection collection){
+        Log.i("Collection size", String.valueOf(collection.size()));
+    }
+
+    @XLog
+    private void xlogLargeArray(int[] ints){
+        Log.i("Large array size", String.valueOf(ints.length));
     }
 
     @XLog

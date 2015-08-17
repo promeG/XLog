@@ -11,7 +11,7 @@ import java.util.Set;
  * from https://github.com/JakeWharton/hugo
  */
 final class Strings {
-    private static final int LOG_CONTENT_MAX_LENGTH = 1000;
+    static final int LOG_CONTENT_MAX_LENGTH = 1000;
 
     static String toString(Object obj) {
         if (obj == null) {
@@ -81,10 +81,13 @@ final class Strings {
         StringBuilder builder = new StringBuilder("[");
         int count = 0;
         for (Object element : collection) {
-            count++;
             if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
                 return builder.append("] (" + count +":" + collection.size() +")").toString();
             }
+            if (count > 0) {
+                builder.append(", ");
+            }
+            count++;
             if (element == null) {
                 builder.append("null");
             } else {
