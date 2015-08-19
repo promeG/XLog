@@ -1,9 +1,7 @@
 package com.github.promeg.xlog_android.lib;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -108,25 +106,25 @@ final class Strings {
             return byteArrayToString((byte[]) obj);
         }
         if (short.class == cls) {
-            return Arrays.toString((short[]) obj);
+            return XLogArrays.toStringPartly((short[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (char.class == cls) {
-            return Arrays.toString((char[]) obj);
+            return XLogArrays.toStringPartly((char[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (int.class == cls) {
-            return Arrays.toString((int[]) obj);
+            return XLogArrays.toStringPartly((int[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (long.class == cls) {
-            return Arrays.toString((long[]) obj);
+            return XLogArrays.toStringPartly((long[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (float.class == cls) {
-            return Arrays.toString((float[]) obj);
+            return XLogArrays.toStringPartly((float[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (double.class == cls) {
-            return Arrays.toString((double[]) obj);
+            return XLogArrays.toStringPartly((double[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (boolean.class == cls) {
-            return Arrays.toString((boolean[]) obj);
+            return XLogArrays.toStringPartly((boolean[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         return arrayToString((Object[]) obj);
     }

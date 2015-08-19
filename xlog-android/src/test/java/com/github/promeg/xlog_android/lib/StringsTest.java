@@ -51,8 +51,23 @@ public class StringsTest {
     }
 
     @Test
-    public void testLargeArrayToString(){
+    public void testLargeObjectArrayToString(){
         Integer[] list = new Integer[1000];
+        for(int i = 0; i < 1000; i++) {
+            list[i] = 123456;
+        }
+
+        String result = Strings.toString(list);
+
+        String expectedTail = "] (126:1000)";
+
+        assertThat(result.endsWith(expectedTail), is(true));
+        assertThat(result.length(), lessThan(Strings.LOG_CONTENT_MAX_LENGTH + 20));
+    }
+
+    @Test
+    public void testLargePrimitiveArrayToString(){
+        int[] list = new int[1000];
         for(int i = 0; i < 1000; i++) {
             list[i] = 123456;
         }
