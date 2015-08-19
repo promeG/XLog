@@ -110,13 +110,13 @@ buildscript {
 
 ```java
 public class MyApplication extends Application {
-  public void onCreate() {
-    super.onCreate();
-    XLogConfig.config(XLogConfig.newConfigBuilder(this)
+    public void onCreate() {
+        super.onCreate();
+        XLogConfig.config(XLogConfig.newConfigBuilder(this)
                     .logMethods(List<XLogMethod> xLogMethod) //optional
                     .timeThreshold(long timeInMillis) // optional
                     .build());
-  }
+    }
 }
 ```
 
