@@ -31,8 +31,12 @@ public class XLogUtils {
         }
         Set<String> nameFromClasses = new HashSet<>();
         for (Class clazz : classes) {
-            if (clazz != null && clazz.getCanonicalName() != null) {
-                nameFromClasses.add(clazz.getCanonicalName().replaceAll("\\$", "."));
+            try {
+                if (clazz != null && clazz.getCanonicalName() != null) {
+                    nameFromClasses.add(clazz.getCanonicalName().replaceAll("\\$", "."));
+                }
+            } catch (Throwable throwable){
+                // ignore
             }
         }
 

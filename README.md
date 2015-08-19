@@ -1,13 +1,10 @@
 # XLog
 Method call logging based on [dexposed](https://github.com/alibaba/dexposed).
 
-## IMPORTANT
-From 2.0 XLog uses [dexposed](https://github.com/alibaba/dexposed) instead of [xposed](http://repo.xposed.info/) to do the work, so there is no need to install xposed framework or root your phone.
-
 ## What's XLog?
 
 ### 1. XLog a method
-Does the same thing like [Hugo](https://github.com/JakeWharton/hugo). Print method calls, arguments, return values, and the execute time by simply add `@XLog` to a method.
+Print method calls, arguments, return values, and the execute time by simply add `@XLog` to a method.
 
 ```java
 @XLog
@@ -90,7 +87,7 @@ XLogConfig.config(XLogConfig.newConfigBuilder(this)
 
 ## How to use XLog
 
-Add XLog to your project.
+### 1. Add XLog to your project.
 
 XLog will do the logging only in debug builds. In release builds, XLog will do noting and the annotation itself will not present.
 
@@ -101,11 +98,25 @@ buildscript {
   }
 
   dependencies {
-    debugCompile 'com.github.promeg:xlog-compiler:2.1.0' // ~6kB
-    debugCompile 'com.github.promeg:xlog-android:2.1.0' // ~150kB
+    debugCompile 'com.github.promeg:xlog-compiler:2.1.1' // ~6kB
+    debugCompile 'com.github.promeg:xlog-android:2.1.1' // ~150kB
 
-    releaseCompile 'com.github.promeg:xlog-android-idle:2.1.0' // ~5kB
+    releaseCompile 'com.github.promeg:xlog-android-idle:2.1.1' // ~5kB
   }
+}
+```
+
+### 2. Configure XLog in your `Application` class
+
+```java
+public class MyApplication extends Application {
+    public void onCreate() {
+        super.onCreate();
+        XLogConfig.config(XLogConfig.newConfigBuilder(this)
+                    .logMethods(List<XLogMethod> xLogMethod) //optional
+                    .timeThreshold(long timeInMillis) // optional
+                    .build());
+    }
 }
 ```
 

@@ -1,6 +1,6 @@
 package com.github.promeg.xlog_android.lib;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -9,12 +9,18 @@ import java.util.Set;
  * from https://github.com/JakeWharton/hugo
  */
 final class Strings {
+    static final int LOG_CONTENT_MAX_LENGTH = 1000;
+
     static String toString(Object obj) {
         if (obj == null) {
             return "null";
         }
         if (obj instanceof CharSequence) {
             return '"' + printableToString(obj.toString()) + '"';
+        }
+
+        if(obj instanceof Collection){
+            return collectionToString((Collection) obj);
         }
 
         Class<?> cls = obj.getClass();
@@ -69,30 +75,56 @@ final class Strings {
         return builder.toString();
     }
 
+    private static String collectionToString(Collection collection) {
+        StringBuilder builder = new StringBuilder("[");
+        int count = 0;
+        for (Object element : collection) {
+            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                return builder.append("] (" + count +":" + collection.size() +")").toString();
+            }
+            if (count > 0) {
+                builder.append(", ");
+            }
+            count++;
+            if (element == null) {
+                builder.append("null");
+            } else {
+                Class elementClass = element.getClass();
+                if (elementClass.isArray() && elementClass.getComponentType() == Object.class) {
+                    Object[] arrayElement = (Object[]) element;
+                    arrayToString(arrayElement, builder, new HashSet<Object[]>());
+                } else {
+                    builder.append(toString(element));
+                }
+            }
+        }
+        return builder.append(']').toString();
+    }
+
     private static String arrayToString(Class<?> cls, Object obj) {
         if (byte.class == cls) {
             return byteArrayToString((byte[]) obj);
         }
         if (short.class == cls) {
-            return Arrays.toString((short[]) obj);
+            return XLogArrays.toStringPartly((short[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (char.class == cls) {
-            return Arrays.toString((char[]) obj);
+            return XLogArrays.toStringPartly((char[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (int.class == cls) {
-            return Arrays.toString((int[]) obj);
+            return XLogArrays.toStringPartly((int[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (long.class == cls) {
-            return Arrays.toString((long[]) obj);
+            return XLogArrays.toStringPartly((long[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (float.class == cls) {
-            return Arrays.toString((float[]) obj);
+            return XLogArrays.toStringPartly((float[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (double.class == cls) {
-            return Arrays.toString((double[]) obj);
+            return XLogArrays.toStringPartly((double[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         if (boolean.class == cls) {
-            return Arrays.toString((boolean[]) obj);
+            return XLogArrays.toStringPartly((boolean[]) obj, LOG_CONTENT_MAX_LENGTH);
         }
         return arrayToString((Object[]) obj);
     }
@@ -102,7 +134,10 @@ final class Strings {
      */
     private static String byteArrayToString(byte[] bytes) {
         StringBuilder builder = new StringBuilder("[");
-        for (int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length && builder.length() < LOG_CONTENT_MAX_LENGTH; i++) {
+            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                return builder.append("] (" + i +":" + bytes.length +")").toString();
+            }
             if (i > 0) {
                 builder.append(", ");
             }
@@ -133,6 +168,11 @@ final class Strings {
         seen.add(array);
         builder.append('[');
         for (int i = 0; i < array.length; i++) {
+            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                builder.append("] (" + i + ":" + array.length +")");
+                seen.remove(array);
+                return;
+            }
             if (i > 0) {
                 builder.append(", ");
             }
