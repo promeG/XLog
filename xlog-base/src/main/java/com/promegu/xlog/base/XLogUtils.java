@@ -10,7 +10,11 @@ import java.util.Set;
 /**
  * Created by guyacong on 2015/3/9.
  */
-public class XLogUtils {
+public final class XLogUtils {
+
+    private XLogUtils() {
+        //no instance
+    }
 
     public static final int TYPE_METHOD = 0;
 
@@ -29,13 +33,13 @@ public class XLogUtils {
         if (classes == null || classes.size() == 0 || classNames == null) {
             return classNames;
         }
-        Set<String> nameFromClasses = new HashSet<>();
+        Set<String> nameFromClasses = new HashSet<String>();
         for (Class clazz : classes) {
             try {
                 if (clazz != null && clazz.getCanonicalName() != null) {
                     nameFromClasses.add(clazz.getCanonicalName().replaceAll("\\$", "."));
                 }
-            } catch (Throwable throwable){
+            } catch (Throwable throwable) {
                 // ignore
             }
         }
@@ -99,7 +103,7 @@ public class XLogUtils {
         if (pkgSectionSize <= 0) {
             return classNames;
         }
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         if (classNames != null) {
             for (String className : classNames) {
                 if (getClassNameSectionSize(className) < pkgSectionSize) {
@@ -115,7 +119,7 @@ public class XLogUtils {
             }
         }
 
-        Set<String> names = new HashSet<>(result);
+        Set<String> names = new HashSet<String>(result);
         Iterator<String> iterator = result.iterator();
         while (iterator.hasNext()) {
             String className = iterator.next();
@@ -133,9 +137,9 @@ public class XLogUtils {
     public static List<String> getPkgPrefixesForCoarseMatchXLogMethods(List<XLogMethod> xLogMethods,
             int pkgSectionSize) {
         if (xLogMethods == null || xLogMethods.size() == 0) {
-            return new ArrayList<>();
+            return new ArrayList<String>();
         }
-        List<String> classNames = new ArrayList<>();
+        List<String> classNames = new ArrayList<String>();
         for (XLogMethod xLogMethod : xLogMethods) {
             if (xLogMethod != null && xLogMethod.getClassName() != null
                     && xLogMethod.getClassName().length() > 0) {

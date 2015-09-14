@@ -4,24 +4,33 @@ import com.promegu.xlog.base.MethodToLog;
 import com.promegu.xlog.base.XLog;
 import com.promegu.xlog.base.XLogUtils;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.*;
 
 public final class XLogProcessor extends AbstractProcessor {
+
     /**
      * Used to build output as Hex
      */
-    private static final char[] DIGITS_LOWER =
-            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] DIGITS_LOWER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private Filer filer;
 
@@ -52,10 +61,10 @@ public final class XLogProcessor extends AbstractProcessor {
                         String.format("@%s annotation must be on as method, constructor or class.",
                                 element.getSimpleName()));
             }
-            if(element instanceof TypeElement){
+            if (element instanceof TypeElement) {
                 // class
                 String pkgName = ((TypeElement) element).getQualifiedName().toString();
-                if(!classNames.contains(pkgName)) {
+                if (!classNames.contains(pkgName)) {
                     classNames.add(pkgName);
                 }
             } else if (element instanceof ExecutableElement) {
@@ -85,20 +94,21 @@ public final class XLogProcessor extends AbstractProcessor {
                         e.getSimpleName().toString(), parameters, parameterNames);
                 methodToLogs.add(methodToLog);
 
-                if(!classNames.contains(methodToLog.getClassName())){
+                if (!classNames.contains(methodToLog.getClassName())) {
                     classNames.add(methodToLog.getClassName());
                 }
             }
         }
 
         if (methodToLogs.size() > 0) {
-            generateXLogProcessor("_" + MD5(env.toString()), methodToLogs, classNames);
+            generateXLogProcessor("_" + md5(env.toString()), methodToLogs, classNames);
         }
 
         return true;
     }
 
-    private void generateXLogProcessor(String classSuffix, List<MethodToLog> methodToLogs, List<String> classNames) {
+    private void generateXLogProcessor(String classSuffix, List<MethodToLog> methodToLogs,
+            List<String> classNames) {
         StringBuilder methodsSb = new StringBuilder();
         methodsSb.append("[");
         if (methodToLogs != null) {
@@ -130,7 +140,8 @@ public final class XLogProcessor extends AbstractProcessor {
         System.out.println(methodToLogStr);
 
         try {
-            JavaFileObject jfo = filer.createSourceFile(XLogUtils.PKG_NAME + "." + XLogUtils.CLASS_NAME + classSuffix);
+            JavaFileObject jfo = filer.createSourceFile(
+                    XLogUtils.PKG_NAME + "." + XLogUtils.CLASS_NAME + classSuffix);
             Writer writer = jfo.openWriter();
             writer.write(brewJava(methodToLogStr, classNamesStr, classSuffix));
             writer.flush();
@@ -223,7 +234,7 @@ public final class XLogProcessor extends AbstractProcessor {
         return result.toString();
     }
 
-    String MD5(String str) {
+    String md5(String str) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             byte[] array = md.digest(str.getBytes("UTF-8"));
@@ -242,8 +253,10 @@ public final class XLogProcessor extends AbstractProcessor {
         final char[] out = new char[l << 1];
         // two characters form the hex value.
         for (int i = 0, j = 0; i < l; i++) {
+            //CHECKSTYLE:OFF
             out[j++] = toDigits[(0xF0 & data[i]) >>> 4];
             out[j++] = toDigits[0x0F & data[i]];
+            //CHECKSTYLE:ON
         }
         return out;
     }

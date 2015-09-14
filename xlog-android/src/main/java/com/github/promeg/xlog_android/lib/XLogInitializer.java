@@ -13,7 +13,7 @@ final class XLogInitializer {
 
     private static final String TAG = "XLogInitializer";
 
-    private transient final Context context;
+    private final transient Context context;
 
     private int mBenchmark;
 
@@ -22,11 +22,11 @@ final class XLogInitializer {
     private List<XLogMethod> mXLogMethods;
 
     public XLogInitializer(Context context, int benchmark, long timeThreshold,
-            List<XLogMethod> XLogMethods) {
+            List<XLogMethod> xLogMethods) {
         this.context = context;
         mBenchmark = benchmark;
         mTimeThreshold = timeThreshold;
-        mXLogMethods = XLogMethods;
+        mXLogMethods = xLogMethods;
     }
 
     public List<XLogMethod> getXLogMethods() {
@@ -47,8 +47,8 @@ final class XLogInitializer {
 
     @Override
     public String toString() {
-        return "{" +
-                "\"mBenchmark\":" + mBenchmark +
-                '}';
+        return "{"
+                + "\"mBenchmark\":" + mBenchmark
+                + '}';
     }
 }

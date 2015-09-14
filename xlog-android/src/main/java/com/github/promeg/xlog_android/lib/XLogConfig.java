@@ -30,11 +30,11 @@ import java.util.Set;
  *       .build());
  * </pre>
  */
-public class XLogConfig {
+public final class XLogConfig {
 
     private static final String TAG = "XLogConfig";
 
-    public static final String XLOG_SharedPreferences = "xlog_settings";
+    public static final String XLOG_SHARED_PREFERENCES = "xlog_settings";
 
     public static final String PREF_CONFIG = "xlog_config";
 
@@ -46,10 +46,10 @@ public class XLogConfig {
 
     public static final int ALL = 3;
 
-    public static final long TimeThreshold_NONE = -1L;
+    public static final long TIME_THRESHOLD_NONE = -1L;
 
-    /** TimeThreshold_BEFORE_HOOK must lessthan TimeThreshold_NONE **/
-    public static final long TimeThreshold_BEFORE_HOOK = -2L;
+    /** TIME_THRESHOLD_BEFORE_HOOK must lessthan TIME_THRESHOLD_NONE **/
+    public static final long TIME_THRESHOLD_BEFORE_HOOK = -2L;
 
     private XLogConfig() {
     }
@@ -60,7 +60,7 @@ public class XLogConfig {
 
     public static void config(final XLogInitializer initializer) {
         SharedPreferences sharedPreferences = initializer.getContext()
-                .getSharedPreferences(XLOG_SharedPreferences, Context.MODE_PRIVATE);
+                .getSharedPreferences(XLOG_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         sharedPreferences.edit().putString(PREF_CONFIG, initializer.toString()).commit();
         if (DexposedBridge.canDexposed(initializer.getContext())) {
             hookAllMethods(initializer.getContext(), initializer.getTimeThreshold(),
@@ -111,13 +111,13 @@ public class XLogConfig {
     }
 
 
-    public static class ConfigBuilder {
+    public static final class ConfigBuilder {
 
         final Context mContext;
 
         int mBenchmark = NONE;
 
-        long mTimeThreshold = TimeThreshold_NONE;
+        long mTimeThreshold = TIME_THRESHOLD_NONE;
 
         List<XLogMethod> mXLogMethods = null;
 

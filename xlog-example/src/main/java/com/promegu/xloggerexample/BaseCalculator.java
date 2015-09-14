@@ -9,11 +9,11 @@ import com.promegu.xlog.base.XLog;
 @XLog
 public class BaseCalculator {
 
-    public String getName(){
+    public String getName() {
         return "BaseCalculator";
     }
 
-    public int calculate(int i, int j){
-        return i+j;
+    public int calculate(int i, int j) {
+        return i + j;
     }
 }

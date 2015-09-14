@@ -6,23 +6,19 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 @RunWith(RobolectricTestRunner.class)
+//CHECKSTYLE:OFF
 @Config(sdk = 21, constants = BuildConfig.class)
 public class StringsTest {
+
     @Test
-    public void testCollectionToString(){
+    public void testCollectionToString() {
         List<Integer> list = new ArrayList<Integer>();
         list.add(1);
         list.add(2);
@@ -36,9 +32,9 @@ public class StringsTest {
     }
 
     @Test
-    public void testLargeCollectionToString(){
+    public void testLargeCollectionToString() {
         List<Integer> list = new ArrayList<Integer>();
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             list.add(123456);
         }
 
@@ -51,9 +47,9 @@ public class StringsTest {
     }
 
     @Test
-    public void testLargeObjectArrayToString(){
+    public void testLargeObjectArrayToString() {
         Integer[] list = new Integer[1000];
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             list[i] = 123456;
         }
 
@@ -66,9 +62,9 @@ public class StringsTest {
     }
 
     @Test
-    public void testLargePrimitiveArrayToString(){
+    public void testLargePrimitiveArrayToString() {
         int[] list = new int[1000];
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             list[i] = 123456;
         }
 
@@ -80,3 +76,4 @@ public class StringsTest {
         assertThat(result.length(), lessThan(Strings.LOG_CONTENT_MAX_LENGTH + 20));
     }
 }
+//CHECKSTYLE:ON

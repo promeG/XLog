@@ -19,26 +19,29 @@ import static org.hamcrest.Matchers.nullValue;
  * Created by guyacong on 2015/7/8.
  */
 public class XLogUtilsTest {
-    static final List<String> classNames = new ArrayList<>();
-    static final List<XLogMethod> xlogMethods = new ArrayList<>();
-    static {
-        classNames.add("com.promegu.xlog.base.XLog");
-        classNames.add("com.promegu.xlog.base.MethodToLog");
-        classNames.add("com.promegu.other.class1");
-        classNames.add("com.promegu.other.class2");
-        classNames.add("java.lang.Object");
-        classNames.add("java.lang.test.Object");
-        classNames.add("retrofit");
-        classNames.add("retrofit.utils");
 
-        xlogMethods.add(new XLogMethod(XLog.class, ""));
-        xlogMethods.add(new XLogMethod(MethodToLog.class, null));
-        xlogMethods.add(new XLogMethod("com.promegu.other.class1", ""));
-        xlogMethods.add(new XLogMethod("com.promegu.other.class2", ""));
-        xlogMethods.add(new XLogMethod(Object.class, "getClass"));
-        xlogMethods.add(new XLogMethod("java.lang.test.Object", ""));
-        xlogMethods.add(new XLogMethod("retrofit", ""));
-        xlogMethods.add(new XLogMethod("retrofit.utils", ""));
+    static final List<String> CLASS_NAMES = new ArrayList<String>();
+
+    static final List<XLogMethod> XLOG_METHODS = new ArrayList<XLogMethod>();
+
+    static {
+        CLASS_NAMES.add("com.promegu.xlog.base.XLog");
+        CLASS_NAMES.add("com.promegu.xlog.base.MethodToLog");
+        CLASS_NAMES.add("com.promegu.other.class1");
+        CLASS_NAMES.add("com.promegu.other.class2");
+        CLASS_NAMES.add("java.lang.Object");
+        CLASS_NAMES.add("java.lang.test.Object");
+        CLASS_NAMES.add("retrofit");
+        CLASS_NAMES.add("retrofit.utils");
+
+        XLOG_METHODS.add(new XLogMethod(XLog.class, ""));
+        XLOG_METHODS.add(new XLogMethod(MethodToLog.class, null));
+        XLOG_METHODS.add(new XLogMethod("com.promegu.other.class1", ""));
+        XLOG_METHODS.add(new XLogMethod("com.promegu.other.class2", ""));
+        XLOG_METHODS.add(new XLogMethod(Object.class, "getClass"));
+        XLOG_METHODS.add(new XLogMethod("java.lang.test.Object", ""));
+        XLOG_METHODS.add(new XLogMethod("retrofit", ""));
+        XLOG_METHODS.add(new XLogMethod("retrofit.utils", ""));
     }
 
     @Test
@@ -47,13 +50,13 @@ public class XLogUtilsTest {
                 .fromJson(MethodToLogTest.METHODS_TO_LOG, new TypeToken<Set<MethodToLog>>() {
                 }.getType());
 
-        List<String> xlogClassNames = new ArrayList<>();
-        for(MethodToLog methodToLog : methodToLogs){
+        List<String> xlogClassNames = new ArrayList<String>();
+        for (MethodToLog methodToLog : methodToLogs) {
             xlogClassNames.add(methodToLog.getClassName());
         }
 
-        XLogSetting xLogSetting = new XLogSetting(methodToLogs, null, XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
-
+        XLogSetting xLogSetting = new XLogSetting(methodToLogs, null,
+                XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
 
         assertThat(XLogUtils.filterResult("com.promegu.xlog.base.TestMatchMethod.InnerClass",
                 xLogSetting), is(true));
@@ -67,24 +70,27 @@ public class XLogUtilsTest {
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch1() {
-        // null or empty classNames --> empty list
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(new ArrayList<String>(), 1).size(), is(0));
+        // null or empty CLASS_NAMES --> empty list
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(new ArrayList<String>(), 1).size(),
+                is(0));
     }
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch2() {
-        // pkgSectionSize <= 0 --> result = classNames
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(classNames, -1).size(), is(classNames.size()));
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(classNames, 0).size(), is(classNames.size()));
+        // pkgSectionSize <= 0 --> result = CLASS_NAMES
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(CLASS_NAMES, -1).size(),
+                is(CLASS_NAMES.size()));
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(CLASS_NAMES, 0).size(),
+                is(CLASS_NAMES.size()));
     }
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch3() {
-        List<String> expected = new ArrayList<>();
+        List<String> expected = new ArrayList<String>();
         expected.add("com.promegu");
         expected.add("java.lang");
         expected.add("retrofit");
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(classNames, 2), is(expected));
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(CLASS_NAMES, 2), is(expected));
 
         expected.clear();
         expected.add("com.promegu.xlog");
@@ -92,30 +98,35 @@ public class XLogUtilsTest {
         expected.add("java.lang.Object");
         expected.add("java.lang.test");
         expected.add("retrofit");
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(classNames, 3), is(expected));
+        //CHECKSTYLE:OFF
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatch(CLASS_NAMES, 3), is(expected));
+        //CHECKSTYLE:ON
     }
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch4() {
         // null or empty XLogMethods --> empty list
         assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(null, 1).size(), is(0));
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(new ArrayList<XLogMethod>(), 1).size(), is(0));
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(new ArrayList<XLogMethod>(), 1)
+                .size(), is(0));
     }
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch5() {
-        // pkgSectionSize <= 0 --> result = classNames
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xlogMethods, -1).size(), is(xlogMethods.size()));
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xlogMethods, 0).size(), is(xlogMethods.size()));
+        // pkgSectionSize <= 0 --> result = CLASS_NAMES
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(XLOG_METHODS, -1).size(),
+                is(XLOG_METHODS.size()));
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(XLOG_METHODS, 0).size(),
+                is(XLOG_METHODS.size()));
     }
 
     @Test
     public void testGetPkgPrefixesForCoarseMatch6() {
-        List<String> expected = new ArrayList<>();
+        List<String> expected = new ArrayList<String>();
         expected.add("com.promegu");
         expected.add("java.lang");
         expected.add("retrofit");
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xlogMethods, 2), is(expected));
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(XLOG_METHODS, 2), is(expected));
 
         expected.clear();
         expected.add("com.promegu.xlog");
@@ -123,26 +134,31 @@ public class XLogUtilsTest {
         expected.add("java.lang.Object");
         expected.add("java.lang.test");
         expected.add("retrofit");
-        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(xlogMethods, 3), is(expected));
+        //CHECKSTYLE:OFF
+        assertThat(XLogUtils.getPkgPrefixesForCoarseMatchXLogMethods(XLOG_METHODS, 3), is(expected));
+        //CHECKSTYLE:ON
     }
 
     @Test
-    public void testShouldLogMember(){
+    public void testShouldLogMember() {
         assertThat(XLogUtils.shouldLogMember(null, getMember(XLogMethod.class, "get")), is(false));
-        assertThat(XLogUtils.shouldLogMember(xlogMethods, null), is(false));
-        assertThat(XLogUtils.shouldLogMember(xlogMethods, getMember(MethodToLog.class, "get")), is(true));
-        assertThat(XLogUtils.shouldLogMember(xlogMethods, getMember(Object.class, "toString")), is(false));
-        assertThat(XLogUtils.shouldLogMember(xlogMethods, getMember(Object.class, "getClass")), is(true));
+        assertThat(XLogUtils.shouldLogMember(XLOG_METHODS, null), is(false));
+        assertThat(XLogUtils.shouldLogMember(XLOG_METHODS, getMember(MethodToLog.class, "get")),
+                is(true));
+        assertThat(XLogUtils.shouldLogMember(XLOG_METHODS, getMember(Object.class, "toString")),
+                is(false));
+        assertThat(XLogUtils.shouldLogMember(XLOG_METHODS, getMember(Object.class, "getClass")),
+                is(true));
     }
 
     @Test
-    public void testGetRemainingClassNames(){
-        Set<Class<?>> classes = new HashSet<>();
+    public void testGetRemainingClassNames() {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(XLog.class);
         classes.add(MethodToLog.class);
         classes.add(Object.class);
 
-        Set<String> expected = new HashSet<>();
+        Set<String> expected = new HashSet<String>();
         expected.add("com.promegu.other.class1");
         expected.add("com.promegu.other.class2");
         expected.add("java.lang.test.Object");
@@ -150,7 +166,7 @@ public class XLogUtilsTest {
         expected.add("retrofit.utils");
 
         assertThat(
-                XLogUtils.getRemainingClassNames(classes, new HashSet<String>(classNames)),
+                XLogUtils.getRemainingClassNames(classes, new HashSet<String>(CLASS_NAMES)),
                 is(expected));
 
     }
@@ -161,8 +177,11 @@ public class XLogUtilsTest {
         assertThat(XLogUtils.getClassNameSectionSize(null), is(0));
         assertThat(XLogUtils.getClassNameSectionSize("com"), is(1));
         assertThat(XLogUtils.getClassNameSectionSize("com.promegu"), is(2));
+        //CHECKSTYLE:OFF
         assertThat(XLogUtils.getClassNameSectionSize("com.promegu.xlog.base"), is(4));
+        //CHECKSTYLE:ON
     }
+
     @Test
     public void testGetClassNameSection() {
         assertThat(XLogUtils.getClassNameSection("", 0), is(""));
@@ -172,10 +191,13 @@ public class XLogUtilsTest {
         assertThat(XLogUtils.getClassNameSection("com.promegu", 1), is("com"));
         assertThat(XLogUtils.getClassNameSection("com.promegu", 2), is("com.promegu"));
         assertThat(XLogUtils.getClassNameSection("com.promegu.xlog.base", 2), is("com.promegu"));
-        assertThat(XLogUtils.getClassNameSection("com.promegu.xlog.base", 4), is("com.promegu.xlog.base"));
+        //CHECKSTYLE:OFF
+        assertThat(XLogUtils.getClassNameSection("com.promegu.xlog.base", 4),
+                is("com.promegu.xlog.base"));
+        //CHECKSTYLE:ON
     }
 
-    private Member getMember(final Class clazz, final String name){
+    private Member getMember(final Class clazz, final String name) {
         return new Member() {
             @Override
             public Class<?> getDeclaringClass() {

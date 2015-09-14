@@ -63,7 +63,7 @@ public class XLogMethodHook extends XC_MethodHook {
             builder.append(" [Thread:\"").append(Thread.currentThread().getName()).append("\"]");
         }
 
-        if (shouldLog(XLogConfig.TimeThreshold_BEFORE_HOOK)) {
+        if (shouldLog(XLogConfig.TIME_THRESHOLD_BEFORE_HOOK)) {
             mBeforeLogCache = null;
             Log.d(asTag(mMember.getDeclaringClass()), builder.toString());
         } else {
@@ -96,7 +96,7 @@ public class XLogMethodHook extends XC_MethodHook {
     }
 
     private boolean shouldLog(long timeInMillis) {
-        if (mTimeThreshold <= 0 || mTimeThreshold == XLogConfig.TimeThreshold_NONE) {
+        if (mTimeThreshold <= 0 || mTimeThreshold == XLogConfig.TIME_THRESHOLD_NONE) {
             return true;
         }
         if (timeInMillis >= mTimeThreshold) {

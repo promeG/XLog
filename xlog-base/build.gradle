@@ -3,6 +3,9 @@ import java.text.SimpleDateFormat
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply from: '../config/quality-java.gradle'
+
+tasks.compileJava.dependsOn('checkstyle')
 
 group = rootProject.ext.groupName
 version = rootProject.ext.releaseVersion

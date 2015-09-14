@@ -6,10 +6,12 @@ import java.lang.reflect.Member;
  * Created by guyacong on 15/8/8.
  */
 public class XLogMethod {
+
     String mClassName;
+
     String mMethodName;
 
-    public XLogMethod(Member member){
+    public XLogMethod(Member member) {
         this(member.getDeclaringClass().getCanonicalName(), member.getName());
     }
 

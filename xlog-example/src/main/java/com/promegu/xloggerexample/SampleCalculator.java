@@ -9,7 +9,7 @@ import com.promegu.xlog.base.XLog;
 public class SampleCalculator extends BaseCalculator {
 
     @Override
-    public String getName(){
+    public String getName() {
         return "SampleCalculator";
     }
 }

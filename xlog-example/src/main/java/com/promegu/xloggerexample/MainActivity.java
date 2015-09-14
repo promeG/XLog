@@ -1,13 +1,14 @@
 package com.promegu.xloggerexample;
 
+import com.promegu.xlog.base.XLog;
+
 import android.app.Activity;
-import android.os.SystemClock;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.promegu.xlog.base.XLog;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ public class MainActivity extends Activity {
 
         printArgs("The", "Quick", "Brown", "Fox");
 
+        //CHECKSTYLE:OFF
         Log.i("Fibonacci", "fibonacci's 4th number is " + fibonacci(4));
 
         Greeter greeter = new Greeter("Jake");
@@ -42,14 +44,15 @@ public class MainActivity extends Activity {
         startSleepyThread();
 
         Collection<Integer> largeCollection = new HashSet<>();
-        for(int i = 1000; i < 2000; i++){
+        for (int i = 1000; i < 2000; i++) {
             largeCollection.add(i);
         }
 
         xlogLargeCollection(largeCollection);
 
         int[] ints = new int[1000];
-        for(int i = 0; i < ints.length; i++){
+        //CHECKSTYLE:ON
+        for (int i = 0; i < ints.length; i++) {
             ints[i] = i;
         }
 
@@ -89,12 +92,12 @@ public class MainActivity extends Activity {
     }
 
     @XLog
-    private void xlogLargeCollection(Collection collection){
+    private void xlogLargeCollection(Collection collection) {
         Log.i("Collection size", String.valueOf(collection.size()));
     }
 
     @XLog
-    private void xlogLargeArray(int[] ints){
+    private void xlogLargeArray(int[] ints) {
         Log.i("Large array size", String.valueOf(ints.length));
     }
 
@@ -114,7 +117,8 @@ public class MainActivity extends Activity {
         new Thread(new Runnable() {
             private static final long SOME_POINTLESS_AMOUNT_OF_TIME = 50;
 
-            @Override public void run() {
+            @Override
+            public void run() {
                 sleepyMethod(SOME_POINTLESS_AMOUNT_OF_TIME);
             }
 
@@ -127,6 +131,7 @@ public class MainActivity extends Activity {
     }
 
     static class Greeter {
+
         private final String name;
 
         @XLog
@@ -141,6 +146,7 @@ public class MainActivity extends Activity {
     }
 
     static class Charmer {
+
         private final String name;
 
         @XLog

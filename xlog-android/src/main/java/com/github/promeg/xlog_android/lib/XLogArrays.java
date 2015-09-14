@@ -1,9 +1,14 @@
 package com.github.promeg.xlog_android.lib;
 
-public class XLogArrays {
+public final class XLogArrays {
 
-    private static final int RedundancyLength = 20;
+    private XLogArrays() {
+        //no instance
+    }
 
+    private static final int REDUNDANCY_LENGTH = 20;
+
+    // suppressing magic number error(6, 7 cory from java.util.Arrays)
     public static String toStringPartly(boolean[] array, int maxLength) {
         if (array == null) {
             return "null";
@@ -11,8 +16,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 7 < maxLength) ? (array.length * 7)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -35,8 +42,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 6 < maxLength) ? (array.length * 6)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -58,8 +67,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 3 < maxLength) ? (array.length * 3)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -81,8 +92,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 7 < maxLength) ? (array.length * 7)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -104,8 +117,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 7 < maxLength) ? (array.length * 7)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -127,8 +142,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 6 < maxLength) ? (array.length * 6)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -150,8 +167,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 6 < maxLength) ? (array.length * 6)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -173,8 +192,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 6 < maxLength) ? (array.length * 6)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);
@@ -197,8 +218,10 @@ public class XLogArrays {
         if (array.length == 0) {
             return "[]";
         }
+        //CHECKSTYLE:OFF
         int preAllocLength = (array.length * 7 < maxLength) ? (array.length * 7)
-                : (maxLength + RedundancyLength);
+                : (maxLength + REDUNDANCY_LENGTH);
+        //CHECKSTYLE:ON
         StringBuilder sb = new StringBuilder(preAllocLength);
         sb.append('[');
         sb.append(array[0]);

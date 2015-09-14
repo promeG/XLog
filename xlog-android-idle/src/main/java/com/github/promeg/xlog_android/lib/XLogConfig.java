@@ -8,9 +8,9 @@ import android.content.Context;
 import java.util.List;
 
 
-public class XLogConfig {
+public final class XLogConfig {
 
-    public static final String XLOG_SharedPreferences = "xlog_settings";
+    public static final String XLOG_SHARED_PREFERENCES = "xlog_settings";
 
     public static final String PREF_CONFIG = "xlog_config";
 
@@ -22,9 +22,9 @@ public class XLogConfig {
 
     public static final int ALL = 3;
 
-    public static final long TimeThreshold_NONE = -1L;
+    public static final long TIME_THRESHOLD_NONE = -1L;
 
-    public static final long TimeThreshold_BEFORE_HOOK = -2L;
+    public static final long TIME_THRESHOLD_BEFORE_HOOK = -2L;
 
     private XLogConfig() {
     }
@@ -37,7 +37,7 @@ public class XLogConfig {
 
     }
 
-    public static class ConfigBuilder {
+    public static final class ConfigBuilder {
 
         private ConfigBuilder(Context context) {
         }

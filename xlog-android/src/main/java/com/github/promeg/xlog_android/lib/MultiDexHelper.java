@@ -37,7 +37,11 @@ import dalvik.system.DexFile;
 /**
  * Created by xudshen@hotmail.com on 14/11/13.
  */
-public class MultiDexHelper {
+public final class MultiDexHelper {
+
+    private MultiDexHelper() {
+        //no instance
+    }
 
     private static final String TAG = "MultiDexHelper";
 
@@ -45,8 +49,8 @@ public class MultiDexHelper {
 
     private static final String EXTRACTED_SUFFIX = ".zip";
 
-    private static final String SECONDARY_FOLDER_NAME = "code_cache" + File.separator +
-            "secondary-dexes";
+    private static final String SECONDARY_FOLDER_NAME = "code_cache" + File.separator
+            + "secondary-dexes";
 
     private static final String PREFS_FILE = "multidex.version";
 
@@ -89,8 +93,8 @@ public class MultiDexHelper {
                 sourcePaths.add(extractedFile.getAbsolutePath());
                 //we ignore the verify zip part
             } else {
-                throw new IOException("Missing extracted secondary dex file '" +
-                        extractedFile.getPath() + "'");
+                throw new IOException("Missing extracted secondary dex file '"
+                        + extractedFile.getPath() + "'");
             }
         }
 
@@ -128,15 +132,16 @@ public class MultiDexHelper {
                     }
                 }
             } catch (IOException e) {
-                throw new IOException("Error at loading dex file '" +
-                        path + "'");
+                throw new IOException("Error at loading dex file '"
+                        + path + "'");
             }
         }
 
         Set<String> classNamesFromSetting = new HashSet<String>(xLogSetting.xlogClassNames);
-        Set<String> remainClassNames = XLogUtils.getRemainingClassNames(new HashSet<Class<?>>(classes), classNamesFromSetting);
-        if(remainClassNames != null) {
-            for (String className : remainClassNames){
+        Set<String> remainClassNames = XLogUtils
+                .getRemainingClassNames(new HashSet<Class<?>>(classes), classNamesFromSetting);
+        if (remainClassNames != null) {
+            for (String className : remainClassNames) {
                 try {
                     classes.add(ClassUtils.getClass(className));
                 } catch (Throwable e) {
@@ -154,7 +159,7 @@ public class MultiDexHelper {
         List<String> sourcePaths = getSourcePaths(context);
 
         List<String> xlogClassNames = new ArrayList<String>();
-        Set<String> XLoggerMethodsClassNames = new HashSet<String>();
+        Set<String> xLoggerMethodsClassNames = new HashSet<String>();
         Set<MethodToLog> methodToLogs = new HashSet<MethodToLog>();
 
         for (String path : sourcePaths) {
@@ -175,7 +180,7 @@ public class MultiDexHelper {
                         try {
                             Class xlogClass = ClassUtils.getClass(className);
 
-                            XLoggerMethodsClassNames.add(className);
+                            xLoggerMethodsClassNames.add(className);
 
                             String classesStr = (String) XposedHelpers
                                     .findField(xlogClass, XLogUtils.FIELD_NAME_CLASSES).get(null);
@@ -194,15 +199,14 @@ public class MultiDexHelper {
                     }
                 }
             } catch (IOException e) {
-                throw new IOException("Error at loading dex file '" +
-                        path + "'");
+                throw new IOException("Error at loading dex file '" + path + "'");
             }
         }
 
         Log.d(TAG, "getXLogSetting() called with " + "context = [" + context + "], xLogPkgName = ["
                 + xLogPkgName + "]  time: " + (System.currentTimeMillis() - startTime));
 
-        return new XLogSetting(methodToLogs, XLoggerMethodsClassNames,
+        return new XLogSetting(methodToLogs, xLoggerMethodsClassNames,
                 XLogUtils.getPkgPrefixesForCoarseMatch(xlogClassNames, 2), xlogClassNames);
     }
 

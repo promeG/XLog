@@ -9,6 +9,7 @@ import java.util.Set;
  * from https://github.com/JakeWharton/hugo
  */
 final class Strings {
+
     static final int LOG_CONTENT_MAX_LENGTH = 1000;
 
     static String toString(Object obj) {
@@ -19,7 +20,7 @@ final class Strings {
             return '"' + printableToString(obj.toString()) + '"';
         }
 
-        if(obj instanceof Collection){
+        if (obj instanceof Collection) {
             return collectionToString((Collection) obj);
         }
 
@@ -37,7 +38,9 @@ final class Strings {
     private static String printableToString(String string) {
         int length = string.length();
         StringBuilder builder = new StringBuilder(length);
+        //CHECKSTYLE:OFF
         for (int i = 0; i < length; ) {
+            //CHECKSTYLE:ON
             int codePoint = string.codePointAt(i);
             switch (Character.getType(codePoint)) {
                 case Character.CONTROL:
@@ -62,7 +65,8 @@ final class Strings {
                             builder.append("\\b");
                             break;
                         default:
-                            builder.append("\\u").append(String.format("%04x", codePoint).toUpperCase(Locale.US));
+                            builder.append("\\u").append(String.format("%04x", codePoint)
+                                    .toUpperCase(Locale.US));
                             break;
                     }
                     break;
@@ -79,8 +83,8 @@ final class Strings {
         StringBuilder builder = new StringBuilder("[");
         int count = 0;
         for (Object element : collection) {
-            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
-                return builder.append("] (" + count +":" + collection.size() +")").toString();
+            if (builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                return builder.append("] (" + count + ":" + collection.size() + ")").toString();
             }
             if (count > 0) {
                 builder.append(", ");
@@ -135,8 +139,8 @@ final class Strings {
     private static String byteArrayToString(byte[] bytes) {
         StringBuilder builder = new StringBuilder("[");
         for (int i = 0; i < bytes.length && builder.length() < LOG_CONTENT_MAX_LENGTH; i++) {
-            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
-                return builder.append("] (" + i +":" + bytes.length +")").toString();
+            if (builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                return builder.append("] (" + i + ":" + bytes.length + ")").toString();
             }
             if (i > 0) {
                 builder.append(", ");
@@ -168,8 +172,8 @@ final class Strings {
         seen.add(array);
         builder.append('[');
         for (int i = 0; i < array.length; i++) {
-            if(builder.length() > LOG_CONTENT_MAX_LENGTH) {
-                builder.append("] (" + i + ":" + array.length +")");
+            if (builder.length() > LOG_CONTENT_MAX_LENGTH) {
+                builder.append("] (" + i + ":" + array.length + ")");
                 seen.remove(array);
                 return;
             }

@@ -24,6 +24,10 @@ dependencies {
 }
 
 apply plugin: 'com.android.application'
+apply from: '../config/quality-android.gradle'
+
+preBuild.dependsOn('checkstyle')
+
 
 version = rootProject.ext.releaseVersion
 
