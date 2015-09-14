@@ -95,18 +95,20 @@ XLogConfig.config(XLogConfig.newConfigBuilder(this)
 XLog will do the logging only in debug builds. In release builds, XLog will do noting and the annotation itself will not present.
 
 ```groovy
-buildscript {
-  repositories {
-    jcenter()
-  }
-
-  dependencies {
-    debugCompile 'com.github.promeg:xlog-compiler:2.1.1' // ~6kB
-    debugCompile 'com.github.promeg:xlog-android:2.1.1' // ~150kB
-
-    releaseCompile 'com.github.promeg:xlog-android-idle:2.1.1' // ~5kB
+buildTypes {
+  debug {
+    minifyEnabled false  // should disable proguard in debug builds
+    ...
   }
 }
+
+dependencies {
+  debugCompile 'com.github.promeg:xlog-compiler:2.1.1' // ~6kB
+  debugCompile 'com.github.promeg:xlog-android:2.1.1' // ~150kB
+
+  releaseCompile 'com.github.promeg:xlog-android-idle:2.1.1' // ~5kB
+}
+
 ```
 
 ### 2. Configure XLog in your `Application` class
