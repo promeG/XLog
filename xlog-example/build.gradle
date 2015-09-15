@@ -9,12 +9,6 @@ buildscript {
     }
 }
 
-Properties props = new Properties()
-if(project.hasProperty("MyProject.properties")
-        && new File(project.property("MyProject.properties")).exists()) {
-    props.load(new FileInputStream(file(project.property("MyProject.properties"))))
-}
-
 dependencies {
     repositories {
         jcenter()
@@ -43,26 +37,15 @@ android {
         versionName "1.0"
     }
 
-    signingConfigs {
-        release {
-            storeFile file(props['keystore'])
-            storePassword props['keystore.password']
-            keyAlias "promegu"
-            keyPassword props['key.password']
-        }
-    }
-
     buildTypes {
 
         debug {
             minifyEnabled false
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
             multiDexEnabled true
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

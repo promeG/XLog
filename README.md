@@ -1,6 +1,7 @@
 # XLog
 
 [ ![jcenter](https://api.bintray.com/packages/promeg/maven/xlog-lib/images/download.svg) ](https://bintray.com/promeg/maven/xlog-lib/_latestVersion)
+[![Build Status](https://travis-ci.org/promeG/XLog.svg?branch=master)](https://travis-ci.org/promeG/XLog)
 
 Method call logging based on [dexposed](https://github.com/alibaba/dexposed).
 
