@@ -10,4 +10,6 @@ before_script:
 script:
   - echo "Travis branch is $TRAVIS_BRANCH"
   - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
+  - ./gradlew :xlog-android:build :xlog-android:test :xlog-android:findbugs
+  - ./gradlew :xlog-android-idle:build :xlog-android-idle:findbugs
   - ./gradlew :xlog-runtime:check :xlog-base:check
